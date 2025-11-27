@@ -36,10 +36,29 @@
         .light-theme { background-color: #f9fafb; color: #111827; }
         .light-theme .bg-gray-800 { background-color: #ffffff; }
         .light-theme .bg-gray-900 { background-color: #f9fafb; }
+        .light-theme .bg-gray-800\/95 { background-color: #ffffff !important; }
         .light-theme .text-white { color: #111827; }
         .light-theme .text-gray-400 { color: #6b7280; }
+        .light-theme .text-gray-300 { color: #4b5563; }
         .light-theme .border-gray-700 { border-color: #e5e7eb; }
+        .light-theme .border-gray-600 { border-color: #d1d5db; }
         .light-theme .bg-gray-700 { background-color: #f3f4f6; }
+        .light-theme .bg-gray-700 input,
+        .light-theme .bg-gray-700 textarea { background-color: #ffffff; color: #111827; border-color: #d1d5db; }
+        .light-theme .bg-blue-600 { background-color: #2563eb !important; }
+        .light-theme .bg-blue-700 { background-color: #1d4ed8 !important; }
+        .light-theme .bg-red-600 { background-color: #dc2626 !important; }
+        .light-theme .bg-green-600 { background-color: #16a34a !important; }
+        .light-theme .bg-purple-600 { background-color: #9333ea !important; }
+        .light-theme .text-blue-500 { color: #3b82f6 !important; }
+        .light-theme .text-green-400 { color: #4ade80 !important; }
+        .light-theme .text-red-500 { color: #ef4444 !important; }
+        .light-theme .hover\:bg-gray-700:hover { background-color: #e5e7eb !important; }
+        .light-theme .hover\:bg-gray-600:hover { background-color: #d1d5db !important; }
+        .light-theme .bg-gradient-to-br { background: linear-gradient(to bottom right, #3b82f6, #8b5cf6); }
+        .light-theme .from-blue-900 { --tw-gradient-from: #1e3a8a; }
+        .light-theme .via-purple-900 { --tw-gradient-via: #581c87; }
+        .light-theme .to-indigo-900 { --tw-gradient-to: #312e81; }
     </style>
 </head>
 <body class="bg-gray-900 text-white transition-colors duration-300" id="bodyElement">
@@ -101,7 +120,7 @@
 
     <!-- Features Section -->
     <section class="max-w-7xl mx-auto px-4 py-16">
-        <h2 class="text-3xl font-bold text-center mb-12">Наши преимущества</h2>
+        <h2 class="text-3xl font-bold text-center mb-12" data-i18n="advantages">Наши преимущества</h2>
         <div class="grid md:grid-cols-3 gap-8">
             <div class="bg-gray-800 border-gray-700 border-2 rounded-2xl p-8 text-center transition-all hover:scale-105 animate-slide-up">
                 <div class="inline-flex p-4 rounded-full mb-4 bg-blue-900/30">
@@ -109,8 +128,8 @@
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold mb-2">HD качество</h3>
-                <p class="text-gray-400">Кристально чистое изображение</p>
+                <h3 class="text-xl font-bold mb-2" data-i18n="hdQuality">HD качество</h3>
+                <p class="text-gray-400" data-i18n="hdQualityDesc">Кристально чистое изображение</p>
             </div>
             <div class="bg-gray-800 border-gray-700 border-2 rounded-2xl p-8 text-center transition-all hover:scale-105 animate-slide-up" style="animation-delay: 0.1s;">
                 <div class="inline-flex p-4 rounded-full mb-4 bg-blue-900/30">
@@ -118,8 +137,8 @@
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold mb-2">Поддержка 24/7</h3>
-                <p class="text-gray-400">Всегда готовы помочь</p>
+                <h3 class="text-xl font-bold mb-2" data-i18n="support247">Поддержка 24/7</h3>
+                <p class="text-gray-400" data-i18n="support247Desc">Всегда готовы помочь</p>
             </div>
             <div class="bg-gray-800 border-gray-700 border-2 rounded-2xl p-8 text-center transition-all hover:scale-105 animate-slide-up" style="animation-delay: 0.2s;">
                 <div class="inline-flex p-4 rounded-full mb-4 bg-blue-900/30">
@@ -127,16 +146,16 @@
                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold mb-2">Все устройства</h3>
-                <p class="text-gray-400">Смотрите на любом экране</p>
+                <h3 class="text-xl font-bold mb-2" data-i18n="allDevices">Все устройства</h3>
+                <p class="text-gray-400" data-i18n="allDevicesDesc">Смотрите на любом экране</p>
             </div>
         </div>
     </section>
 
     <!-- Countries Section -->
     <section id="countries" class="max-w-7xl mx-auto px-4 py-16">
-        <h2 class="text-3xl font-bold text-center mb-4">Выберите страну</h2>
-        <p class="text-center mb-12 text-gray-400">Выберите страну для просмотра доступных пакетов</p>
+        <h2 class="text-3xl font-bold text-center mb-4" data-i18n="selectCountryTitle">Выберите страну</h2>
+        <p class="text-center mb-12 text-gray-400" data-i18n="selectCountryDesc">Выберите страну для просмотра доступных пакетов</p>
         <div id="countriesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-6"></div>
     </section>
 
@@ -239,27 +258,32 @@
                 </div>
 
                 <div class="p-8 max-h-[80vh] overflow-y-auto">
-                    <h2 class="text-3xl font-bold mb-6">Регистрация</h2>
+                    <h2 class="text-3xl font-bold mb-6" data-i18n="registration">Регистрация</h2>
                     
                     <form id="orderForm" class="space-y-5 mb-8">
                         <div>
-                            <label class="block text-sm font-bold mb-2">Ваше имя</label>
+                            <label class="block text-sm font-bold mb-2" data-i18n="name">Ваше имя</label>
                             <input type="text" id="nameInput" class="w-full px-4 py-3 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Иван Иванов" required>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold mb-2">Email адрес</label>
+                            <label class="block text-sm font-bold mb-2" data-i18n="email">Email адрес</label>
                             <input type="email" id="emailInput" class="w-full px-4 py-3 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="email@example.com" required>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold mb-2">Придумайте пароль</label>
+                            <label class="block text-sm font-bold mb-2" data-i18n="password">Придумайте пароль</label>
                             <input type="password" id="passwordInput" class="w-full px-4 py-3 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
-                            <p class="text-xs text-gray-400 mt-1">Минимум 6 символов</p>
+                            <p class="text-xs text-gray-400 mt-1" data-i18n="passwordMin">Минимум 6 символов</p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold mb-2">Промокод (необязательно)</label>
+                            <label class="block text-sm font-bold mb-2" data-i18n="phone">Телефон</label>
+                            <input type="tel" id="phoneInput" class="w-full px-4 py-3 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="+7 (999) 123-45-67" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-2" data-i18n="promoCode">Промокод (необязательно)</label>
                             <div class="flex gap-2">
                                 <input type="text" id="promoInput" class="flex-1 px-4 py-3 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="PROMO123">
                                 <button type="button" onclick="applyPromo()" class="px-6 py-3 rounded-xl font-bold bg-green-600 hover:bg-green-700">Применить</button>
@@ -271,12 +295,12 @@
                     </form>
 
                     <div class="p-6 rounded-xl mb-6 bg-gray-700">
-                        <div class="text-sm opacity-75 mb-1">К оплате:</div>
+                        <div class="text-sm opacity-75 mb-1" data-i18n="toPay">К оплате:</div>
                         <div class="text-4xl font-extrabold text-blue-500"><span id="finalPrice">250</span> ₽</div>
-                        <div class="text-sm opacity-75 mt-1" id="finalPeriodInfo">За 1 месяц</div>
+                        <div class="text-sm opacity-75 mt-1" id="finalPeriodInfo" data-i18n="forMonth">За 1 месяц</div>
                     </div>
 
-                    <button onclick="submitForm()" class="w-full px-6 py-4 rounded-xl font-bold text-lg text-white transition-all bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 active:scale-95 hover:scale-105 shadow-lg">
+                    <button onclick="submitForm()" class="w-full px-6 py-4 rounded-xl font-bold text-lg text-white transition-all bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 active:scale-95 hover:scale-105 shadow-lg" data-i18n="register">
                         Зарегистрироваться
                     </button>
                 </div>
@@ -822,7 +846,90 @@ const translations = {
         logout: 'Выйти',
         emailExists: 'Email уже используется',
         error: 'Ошибка',
-        success: 'Успешно'
+        success: 'Успешно',
+        name: 'Ваше имя',
+        email: 'Email адрес',
+        password: 'Придумайте пароль',
+        passwordMin: 'Минимум 6 символов',
+        phone: 'Телефон',
+        promoCode: 'Промокод (необязательно)',
+        apply: 'Применить',
+        registration: 'Регистрация',
+        register: 'Зарегистрироваться',
+        toPay: 'К оплате',
+        forMonth: 'За 1 месяц',
+        forMonths: 'За {months} месяцев',
+        selectPeriod: 'Выберите срок подписки',
+        month: 'месяц',
+        months: 'месяцев',
+        basePackage: 'Базовый пакет',
+        additionalOptions: 'Дополнительные опции',
+        sport: 'Спорт',
+        erotica: 'Эротика',
+        channels: 'каналов',
+        perMonth: '/мес',
+        total: 'Итого:',
+        heroTitle: 'IPTV сервис без границ',
+        heroSubtitle: 'Смотрите любимые телеканалы из любой страны мира в HD качестве',
+        advantages: 'Наши преимущества',
+        hdQuality: 'HD качество',
+        hdQualityDesc: 'Кристально чистое изображение',
+        support247: 'Поддержка 24/7',
+        support247Desc: 'Всегда готовы помочь',
+        allDevices: 'Все устройства',
+        allDevicesDesc: 'Смотрите на любом экране',
+        selectCountryTitle: 'Выберите страну',
+        selectCountryDesc: 'Выберите страну для просмотра доступных пакетов',
+        userCabinet: 'Личный кабинет',
+        loginToAccount: 'Войдите в свой аккаунт',
+        subscriptionInfo: 'Информация о подписке',
+        subscriptionEnd: 'Дата окончания:',
+        status: 'Статус:',
+        active: 'Активна',
+        inactive: 'Неактивна',
+        iptvData: 'Данные для IPTV',
+        iptvLogin: 'Логин IPTV:',
+        iptvPassword: 'Пароль IPTV:',
+        iptvPending: 'Данные для доступа появятся после проверки администратором',
+        backToMain: 'Назад на главную',
+        registrationSuccess: 'Регистрация успешна!',
+        accountCreated: 'Ваш аккаунт создан. Данные для доступа к IPTV появятся в личном кабинете после проверки администратором.',
+        loginData: 'Ваши данные для входа:',
+        passwordHint: 'тот, который вы указали',
+        returnToSite: 'Вернуться на сайт',
+        goToCabinet: 'Перейти в личный кабинет',
+        adminPanel: 'Admin Panel',
+        dashboard: 'Dashboard',
+        users: 'Пользователи',
+        countries: 'Страны',
+        packages: 'Пакеты',
+        promocodes: 'Промокоды',
+        settings: 'Настройки',
+        totalUsers: 'Всего пользователей',
+        activeSubscriptions: 'Активные подписки',
+        monthlyRevenue: 'Доход за месяц',
+        expiringSoon: 'Истекают скоро',
+        userManagement: 'Управление пользователями',
+        countryManagement: 'Управление странами',
+        packageManagement: 'Управление пакетами',
+        promocodeManagement: 'Управление промокодами',
+        siteSettings: 'Настройки сайта',
+        siteName: 'Название сайта',
+        heroTitleSetting: 'Заголовок Hero секции',
+        heroSubtitleSetting: 'Подзаголовок Hero секции',
+        saveSettings: 'Сохранить настройки',
+        addCountry: 'Добавить страну',
+        createPromo: 'Создать промокод',
+        discount: 'Скидка',
+        used: 'Использовано',
+        maxUses: 'Макс. использований',
+        expires: 'Истекает',
+        activate: 'Активировать',
+        deactivate: 'Деактивировать',
+        editUser: 'Редактировать пользователя',
+        notes: 'Заметки',
+        unlimited: '∞',
+        noExpiry: 'Без срока'
     },
     en: {
         personalCabinet: 'Personal Cabinet',
@@ -839,7 +946,90 @@ const translations = {
         logout: 'Logout',
         emailExists: 'Email already in use',
         error: 'Error',
-        success: 'Success'
+        success: 'Success',
+        name: 'Your Name',
+        email: 'Email Address',
+        password: 'Create Password',
+        passwordMin: 'Minimum 6 characters',
+        phone: 'Phone',
+        promoCode: 'Promo Code (optional)',
+        apply: 'Apply',
+        registration: 'Registration',
+        register: 'Register',
+        toPay: 'To Pay',
+        forMonth: 'For 1 month',
+        forMonths: 'For {months} months',
+        selectPeriod: 'Select Subscription Period',
+        month: 'month',
+        months: 'months',
+        basePackage: 'Base Package',
+        additionalOptions: 'Additional Options',
+        sport: 'Sports',
+        erotica: 'Adult',
+        channels: 'channels',
+        perMonth: '/month',
+        total: 'Total:',
+        heroTitle: 'IPTV Service Without Borders',
+        heroSubtitle: 'Watch your favorite TV channels from any country in HD quality',
+        advantages: 'Our Advantages',
+        hdQuality: 'HD Quality',
+        hdQualityDesc: 'Crystal clear image',
+        support247: '24/7 Support',
+        support247Desc: 'Always ready to help',
+        allDevices: 'All Devices',
+        allDevicesDesc: 'Watch on any screen',
+        selectCountryTitle: 'Select Country',
+        selectCountryDesc: 'Select a country to view available packages',
+        userCabinet: 'Personal Cabinet',
+        loginToAccount: 'Login to your account',
+        subscriptionInfo: 'Subscription Information',
+        subscriptionEnd: 'End Date:',
+        status: 'Status:',
+        active: 'Active',
+        inactive: 'Inactive',
+        iptvData: 'IPTV Data',
+        iptvLogin: 'IPTV Login:',
+        iptvPassword: 'IPTV Password:',
+        iptvPending: 'IPTV access data will appear after administrator verification',
+        backToMain: 'Back to Main',
+        registrationSuccess: 'Registration Successful!',
+        accountCreated: 'Your account has been created. IPTV access data will appear in your personal cabinet after administrator verification.',
+        loginData: 'Your Login Data:',
+        passwordHint: 'the one you specified',
+        returnToSite: 'Return to Site',
+        goToCabinet: 'Go to Personal Cabinet',
+        adminPanel: 'Admin Panel',
+        dashboard: 'Dashboard',
+        users: 'Users',
+        countries: 'Countries',
+        packages: 'Packages',
+        promocodes: 'Promo Codes',
+        settings: 'Settings',
+        totalUsers: 'Total Users',
+        activeSubscriptions: 'Active Subscriptions',
+        monthlyRevenue: 'Monthly Revenue',
+        expiringSoon: 'Expiring Soon',
+        userManagement: 'User Management',
+        countryManagement: 'Country Management',
+        packageManagement: 'Package Management',
+        promocodeManagement: 'Promo Code Management',
+        siteSettings: 'Site Settings',
+        siteName: 'Site Name',
+        heroTitleSetting: 'Hero Section Title',
+        heroSubtitleSetting: 'Hero Section Subtitle',
+        saveSettings: 'Save Settings',
+        addCountry: 'Add Country',
+        createPromo: 'Create Promo Code',
+        discount: 'Discount',
+        used: 'Used',
+        maxUses: 'Max Uses',
+        expires: 'Expires',
+        activate: 'Activate',
+        deactivate: 'Deactivate',
+        editUser: 'Edit User',
+        notes: 'Notes',
+        unlimited: '∞',
+        noExpiry: 'No Expiry'
     }
 };
 
@@ -861,7 +1051,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // Check for admin hash
 function checkAdminHash() {
     const hash = window.location.hash;
-    if (hash === '#/admin1973') {
+    const path = window.location.pathname;
+    
+    // Проверяем hash или path
+    if (hash === '#/admin1973' || path === '/admin1973' || hash.includes('admin1973')) {
         showAdminLogin();
     }
 }
@@ -925,7 +1118,102 @@ function setLanguage(lang) {
     currentLang = lang;
     document.getElementById('langText').textContent = lang.toUpperCase();
     localStorage.setItem('language', lang);
-    // Update translations (simplified - can be expanded)
+    applyTranslations(lang);
+}
+
+function applyTranslations(lang) {
+    const t = translations[lang] || translations.ru;
+    
+    // Применяем переводы ко всем элементам с data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) {
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.placeholder = t[key];
+            } else {
+                el.textContent = t[key];
+            }
+        }
+    });
+    
+    // Обновляем основные элементы интерфейса
+    const personalCabinetBtn = document.querySelector('button[onclick="showUserLogin()"]');
+    if (personalCabinetBtn) personalCabinetBtn.textContent = t.personalCabinet;
+    
+    const selectCountryBtn = document.querySelector('button[onclick="scrollToCountries()"]');
+    if (selectCountryBtn) selectCountryBtn.textContent = t.selectCountry;
+    
+    // Обновляем заголовки
+    const heroTitle = document.getElementById('heroTitle');
+    if (heroTitle) heroTitle.textContent = t.heroTitle;
+    
+    const heroSubtitle = document.getElementById('heroSubtitle');
+    if (heroSubtitle) heroSubtitle.textContent = t.heroSubtitle;
+    
+    // Обновляем секции преимуществ
+    const advantagesSection = document.querySelector('section h2');
+    if (advantagesSection) {
+        const text = advantagesSection.textContent.toLowerCase();
+        if (text.includes('преимущества') || text.includes('advantages')) {
+            advantagesSection.textContent = t.advantages;
+        }
+    }
+    
+    // Обновляем заголовки преимуществ
+    const hdQuality = document.querySelector('h3');
+    if (hdQuality && hdQuality.textContent.includes('HD качество')) {
+        hdQuality.textContent = t.hdQuality;
+        const nextP = hdQuality.nextElementSibling;
+        if (nextP && nextP.classList.contains('text-gray-400')) {
+            nextP.textContent = t.hdQualityDesc;
+        }
+    }
+    
+    // Обновляем кнопки в модальном окне
+    const registerBtn = document.querySelector('button[onclick="submitForm()"]');
+    if (registerBtn) registerBtn.textContent = t.register;
+    
+    const applyPromoBtn = document.querySelector('button[onclick="applyPromo()"]');
+    if (applyPromoBtn) applyPromoBtn.textContent = t.apply;
+    
+    // Обновляем тексты в модальном окне
+    const toPayLabel = document.querySelector('.text-sm.opacity-75');
+    if (toPayLabel && toPayLabel.textContent.includes('К оплате')) {
+        toPayLabel.textContent = t.toPay;
+    }
+    
+    // Обновляем заголовки секций
+    const selectCountryTitle = document.querySelector('#countries h2');
+    if (selectCountryTitle) {
+        const text = selectCountryTitle.textContent.toLowerCase();
+        if (text.includes('выберите страну') || text.includes('select country')) {
+            selectCountryTitle.textContent = t.selectCountryTitle;
+        }
+    }
+    
+    // Обновляем тексты в карточках преимуществ
+    document.querySelectorAll('h3').forEach(h3 => {
+        const text = h3.textContent.toLowerCase();
+        if (text.includes('hd качество') || text.includes('hd quality')) {
+            h3.textContent = t.hdQuality;
+            const desc = h3.nextElementSibling;
+            if (desc && desc.classList.contains('text-gray-400')) {
+                desc.textContent = t.hdQualityDesc;
+            }
+        } else if (text.includes('поддержка') || text.includes('support')) {
+            h3.textContent = t.support247;
+            const desc = h3.nextElementSibling;
+            if (desc && desc.classList.contains('text-gray-400')) {
+                desc.textContent = t.support247Desc;
+            }
+        } else if (text.includes('все устройства') || text.includes('all devices')) {
+            h3.textContent = t.allDevices;
+            const desc = h3.nextElementSibling;
+            if (desc && desc.classList.contains('text-gray-400')) {
+                desc.textContent = t.allDevicesDesc;
+            }
+        }
+    });
 }
 
 function initLanguageToggle() {
@@ -969,12 +1257,13 @@ async function loadCustomization() {
 // Render countries
 function renderCountries() {
     const grid = document.getElementById('countriesGrid');
+    const t = translations[currentLang] || translations.ru;
     grid.innerHTML = countries.map(country => `
         <button onclick="selectCountry(${country.id})" class="country-card p-6 rounded-2xl border-2 border-gray-700 hover:border-gray-600 bg-gray-800 transition-all">
             <div class="text-5xl mb-3">${country.flag}</div>
             <div class="font-bold text-lg mb-1">${country.name}</div>
-            <div class="text-sm text-gray-400 mb-3">${country.channels} каналов</div>
-            <div class="text-xl font-bold text-blue-500">${country.price} ₽/мес</div>
+            <div class="text-sm text-gray-400 mb-3">${country.channels} ${t.channels}</div>
+            <div class="text-xl font-bold text-blue-500">${country.price} ₽${t.perMonth}</div>
         </button>
     `).join('');
 }
@@ -1131,23 +1420,32 @@ async function submitForm() {
     const name = document.getElementById('nameInput').value.trim();
     const email = document.getElementById('emailInput').value.trim();
     const password = document.getElementById('passwordInput').value;
+    const phone = document.getElementById('phoneInput')?.value.trim() || '';
     
     // Validation
-    if (!name || !email || !password) {
-        document.getElementById('emailError').textContent = 'Заполните все поля';
+    if (!name || !email || !password || !phone) {
+        document.getElementById('emailError').textContent = currentLang === 'ru' ? 'Заполните все поля' : 'Fill in all fields';
         document.getElementById('emailError').classList.remove('hidden');
         return;
     }
     
     if (password.length < 6) {
-        document.getElementById('emailError').textContent = 'Пароль должен содержать минимум 6 символов';
+        document.getElementById('emailError').textContent = currentLang === 'ru' ? 'Пароль должен содержать минимум 6 символов' : 'Password must be at least 6 characters';
         document.getElementById('emailError').classList.remove('hidden');
         return;
     }
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        document.getElementById('emailError').textContent = 'Введите корректный email';
+        document.getElementById('emailError').textContent = currentLang === 'ru' ? 'Введите корректный email' : 'Enter a valid email';
+        document.getElementById('emailError').classList.remove('hidden');
+        return;
+    }
+    
+    // Phone validation (basic)
+    const phoneRegex = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/;
+    if (!phoneRegex.test(phone)) {
+        document.getElementById('emailError').textContent = currentLang === 'ru' ? 'Введите корректный номер телефона' : 'Enter a valid phone number';
         document.getElementById('emailError').classList.remove('hidden');
         return;
     }
@@ -1170,6 +1468,7 @@ async function submitForm() {
         name,
         email,
         password,
+        phone,
         country: selectedCountry.name,
         countryId: selectedCountry.id,
         addons: selectedAddons,
@@ -1216,6 +1515,8 @@ function resetForm() {
     document.getElementById('nameInput').value = '';
     document.getElementById('emailInput').value = '';
     document.getElementById('passwordInput').value = '';
+    const phoneInput = document.getElementById('phoneInput');
+    if (phoneInput) phoneInput.value = '';
     document.getElementById('promoInput').value = '';
     document.getElementById('emailError').classList.add('hidden');
     document.getElementById('promoMessage').classList.add('hidden');
