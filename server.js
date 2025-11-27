@@ -11,6 +11,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const sanitizeHtml = require('sanitize-html');
 const path = require('path');
+const fs = require('fs');
 const db = require('./database');
 
 const app = express();
@@ -34,16 +35,28 @@ app.use(helmet({
 
 // CORS configuration
 const allowedOrigins = process.env.ALLOWED_ORIGINS 
-  ? process.env.ALLOWED_ORIGINS.split(',')
-  : (process.env.NODE_ENV === 'production' ? [] : ['http://localhost:3000']);
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : null;
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    // Если ALLOWED_ORIGINS не задан, разрешаем все (для production и development)
+    if (!allowedOrigins || allowedOrigins.length === 0) {
+      return callback(null, true);
     }
+    
+    // Если origin не указан (например, запрос с того же домена), разрешаем
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    // Проверяем, есть ли origin в списке разрешенных
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Если origin не в списке, блокируем
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -365,10 +378,10 @@ app.post('/api/users', async (req, res) => {
     const sanitized = sanitizeInput(req.body);
     
     // Validate required fields
-    const { name, email, password, country, countryId, period, price } = sanitized;
+    const { name, email, password, phone, country, countryId, period, price } = sanitized;
     
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Имя, email и пароль обязательны' });
+    if (!name || !email || !password || !phone) {
+      return res.status(400).json({ error: 'Имя, email, пароль и телефон обязательны' });
     }
     
     // Validate email format
@@ -769,12 +782,20 @@ app.get('/api/statistics', authenticateToken, requireAdmin, async (req, res) => 
 // ============================================
 
 async function sendTelegramNotification(userData) {
+  const addons = [];
+  if (userData.addons && Array.isArray(userData.addons)) {
+    if (userData.addons.includes('sport')) addons.push('Спорт');
+    if (userData.addons.includes('erotica')) addons.push('Эротика');
+  }
+  const addonsText = addons.length > 0 ? `\n📺 *Доп. каналы:* ${addons.join(', ')}` : '';
+  
   const message = `🎬 *Новая регистрация на MyTVS*
 
 👤 *Имя:* ${userData.name}
 📧 *Email:* ${userData.email}
+📱 *Телефон:* ${userData.phone || 'Не указан'}
 🌍 *Страна:* ${userData.country}
-⏰ *Срок:* ${userData.period} мес
+⏰ *Срок:* ${userData.period} мес${addonsText}
 ${userData.promoCode ? `🎁 *Промокод:* ${userData.promoCode}\n` : ''}💰 *Сумма:* ${userData.price} ₽
 
 📅 ${new Date().toLocaleString('ru-RU')}
@@ -782,7 +803,7 @@ ${userData.promoCode ? `🎁 *Промокод:* ${userData.promoCode}\n` : ''}�
 ⚠️ *Не забудьте добавить данные для IPTV!*`;
 
   try {
-    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    const response = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -791,8 +812,17 @@ ${userData.promoCode ? `🎁 *Промокод:* ${userData.promoCode}\n` : ''}�
         parse_mode: 'Markdown'
       })
     });
+    
+    const result = await response.json();
+    
+    if (result.ok) {
+      console.log('✅ Telegram notification sent successfully');
+    } else {
+      console.error('❌ Telegram API error:', result.description || 'Unknown error');
+    }
   } catch (error) {
-    console.error('Telegram notification error:', error);
+    console.error('❌ Telegram notification error:', error.message);
+    // Не прерываем выполнение, если Telegram недоступен
   }
 }
 
@@ -813,9 +843,55 @@ app.get('/health', (req, res) => {
 // ROOT ROUTE - Serve index.html
 // ============================================
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// Helper function to serve index.html
+function serveIndexHtml(req, res) {
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  
+  // Проверяем существование файла
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    console.error(`❌ ERROR: index.html not found at ${indexPath}`);
+    console.error(`Current directory: ${__dirname}`);
+    console.error(`Public directory exists: ${fs.existsSync(path.join(__dirname, 'public'))}`);
+    
+    // Пробуем альтернативные пути
+    const altPaths = [
+      path.join(process.cwd(), 'public', 'index.html'),
+      path.join(__dirname, '..', 'public', 'index.html'),
+      path.join(process.cwd(), 'index.html')
+    ];
+    
+    let found = false;
+    for (const altPath of altPaths) {
+      if (fs.existsSync(altPath)) {
+        console.log(`✅ Found index.html at alternative path: ${altPath}`);
+        res.sendFile(altPath);
+        found = true;
+        break;
+      }
+    }
+    
+    if (!found) {
+      res.status(500).send(`
+        <html>
+          <head><title>Configuration Error</title></head>
+          <body style="font-family: Arial; padding: 40px; text-align: center;">
+            <h1>Configuration Error</h1>
+            <p>index.html file not found. Please ensure the 'public' folder is included in your deployment.</p>
+            <p>Expected path: ${indexPath}</p>
+            <p>Current directory: ${__dirname}</p>
+          </body>
+        </html>
+      `);
+    }
+  }
+}
+
+app.get('/', serveIndexHtml);
+
+// Admin panel route
+app.get('/admin1973', serveIndexHtml);
 
 // ============================================
 // ERROR HANDLING MIDDLEWARE
@@ -829,7 +905,31 @@ app.use((req, res) => {
   }
   
   // Для всех остальных запросов отдаем index.html (поддержка SPA роутинга)
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    // Пробуем альтернативные пути
+    const altPaths = [
+      path.join(process.cwd(), 'public', 'index.html'),
+      path.join(__dirname, '..', 'public', 'index.html'),
+      path.join(process.cwd(), 'index.html')
+    ];
+    
+    let found = false;
+    for (const altPath of altPaths) {
+      if (fs.existsSync(altPath)) {
+        res.sendFile(altPath);
+        found = true;
+        break;
+      }
+    }
+    
+    if (!found) {
+      res.status(404).send('Page not found');
+    }
+  }
 });
 
 // Centralized error handler
