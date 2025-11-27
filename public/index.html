@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyTVS - IPTV сервис без границ</title>
+    <meta name="description" content="Смотрите любимые телеканалы из любой страны мира в HD качестве">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes checkmark { 0% { stroke-dashoffset: 50; } 100% { stroke-dashoffset: 0; } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .animate-slide-down { animation: slideDown 0.5s ease-out; }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+        .animate-slide-up { animation: slideUp 0.5s ease-out; }
+        .animate-scale-in { animation: scaleIn 0.4s ease-out; }
+        .animate-pulse-custom { animation: pulse 2s infinite; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .country-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .country-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .package-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .package-item:hover { transform: translateX(4px); }
+        .success-checkmark { stroke-dasharray: 50; animation: checkmark 0.6s ease-out forwards; stroke-linecap: round; }
+        .gradient-text { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hidden { display: none; }
+        .period-card { transition: all 0.3s ease; cursor: pointer; }
+        .period-card:hover { transform: scale(1.05); }
+        .period-card.selected { border-width: 3px; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .loader { border: 3px solid rgba(255, 255, 255, 0.1); border-top: 3px solid currentColor; border-radius: 50%; animation: spin 1s linear infinite; }
+        .light-theme { background-color: #f9fafb; color: #111827; }
+        .light-theme .bg-gray-800 { background-color: #ffffff; }
+        .light-theme .bg-gray-900 { background-color: #f9fafb; }
+        .light-theme .text-white { color: #111827; }
+        .light-theme .text-gray-400 { color: #6b7280; }
+        .light-theme .border-gray-700 { border-color: #e5e7eb; }
+        .light-theme .bg-gray-700 { background-color: #f3f4f6; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white transition-colors duration-300" id="bodyElement">
+
+<!-- Main Site Content -->
+<div id="mainSite">
+    <!-- Header -->
+    <header class="bg-gray-800/95 border-b border-gray-700 backdrop-blur-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div id="siteLogo" class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">TV</span>
+                </div>
+                <span class="text-lg font-bold" id="siteName">MyTVS</span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="showUserLogin()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition-all font-semibold">
+                    Личный кабинет
+                </button>
+                
+                <button id="themeToggle" class="p-2.5 rounded-lg transition-all hover:scale-110 active:scale-95 bg-gray-700 hover:bg-gray-600">
+                    <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+
+                <button id="langToggle" class="flex items-center gap-2 px-3 py-2 rounded-lg transition-all hover:scale-110 active:scale-95 bg-gray-700 hover:bg-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <span class="font-semibold" id="langText">RU</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 py-20 text-center relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-10 left-10 w-72 h-72 bg-blue-500 rounded-full filter blur-3xl animate-float"></div>
+            <div class="absolute bottom-10 right-10 w-96 h-96 bg-purple-500 rounded-full filter blur-3xl animate-float" style="animation-delay: 1s;"></div>
+        </div>
+        
+        <div class="relative z-10 max-w-4xl mx-auto px-4">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 animate-slide-up">
+                <span class="gradient-text" id="heroTitle">IPTV сервис без границ</span>
+            </h1>
+            <p class="text-lg md:text-2xl mb-10 opacity-90 animate-slide-up max-w-2xl mx-auto" id="heroSubtitle">
+                Смотрите любимые телеканалы из любой страны мира в HD качестве
+            </p>
+            <button onclick="scrollToCountries()" class="px-8 py-4 rounded-xl font-bold text-lg transition-all hover:scale-105 active:scale-95 shadow-xl animate-slide-up bg-white text-blue-900 hover:bg-gray-100">
+                Выбрать страну
+            </button>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="max-w-7xl mx-auto px-4 py-16">
+        <h2 class="text-3xl font-bold text-center mb-12">Наши преимущества</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-gray-800 border-gray-700 border-2 rounded-2xl p-8 text-center transition-all hover:scale-105 animate-slide-up">
+                <div class="inline-flex p-4 rounded-full mb-4 bg-blue-900/30">
+                    <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-2">HD качество</h3>
+                <p class="text-gray-400">Кристально чистое изображение</p>
+            </div>
+            <div class="bg-gray-800 border-gray-700 border-2 rounded-2xl p-8 text-center transition-all hover:scale-105 animate-slide-up" style="animation-delay: 0.1s;">
+                <div class="inline-flex p-4 rounded-full mb-4 bg-blue-900/30">
+                    <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Поддержка 24/7</h3>
+                <p class="text-gray-400">Всегда готовы помочь</p>
+            </div>
+            <div class="bg-gray-800 border-gray-700 border-2 rounded-2xl p-8 text-center transition-all hover:scale-105 animate-slide-up" style="animation-delay: 0.2s;">
+                <div class="inline-flex p-4 rounded-full mb-4 bg-blue-900/30">
+                    <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Все устройства</h3>
+                <p class="text-gray-400">Смотрите на любом экране</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Countries Section -->
+    <section id="countries" class="max-w-7xl mx-auto px-4 py-16">
+        <h2 class="text-3xl font-bold text-center mb-4">Выберите страну</h2>
+        <p class="text-center mb-12 text-gray-400">Выберите страну для просмотра доступных пакетов</p>
+        <div id="countriesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-6"></div>
+    </section>
+
+    <!-- Order Modal -->
+    <div id="modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-50 p-4 overflow-y-auto">
+        <div class="bg-gray-800 rounded-3xl shadow-2xl max-w-5xl w-full my-8 animate-scale-in overflow-hidden relative">
+            <button onclick="closeModal()" class="absolute top-6 right-6 p-2 transition-all hover:scale-110 active:scale-95 rounded-lg hover:bg-gray-700 z-10">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <div class="grid md:grid-cols-2">
+                <div class="p-8 border-r border-gray-700 max-h-[80vh] overflow-y-auto">
+                    <h2 class="text-3xl font-bold mb-6">Выберите пакет</h2>
+                    
+                    <!-- Subscription Period -->
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold mb-4">Выберите срок подписки</h3>
+                        <div class="space-y-3">
+                            <div onclick="selectPeriod(1)" id="period1" class="period-card selected p-4 rounded-xl border-2 border-blue-500 bg-blue-900/30">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <div class="font-bold">1 месяц</div>
+                                        <div class="text-sm text-gray-400">Стандартная цена</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-xl font-bold text-blue-500" id="price1Month">250 ₽</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div onclick="selectPeriod(6)" id="period6" class="period-card p-4 rounded-xl border-2 border-gray-600 hover:border-gray-500">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <div class="font-bold">6 месяцев</div>
+                                        <div class="text-sm text-green-400">Скидка 5%</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-xl font-bold text-blue-500" id="price6Month">1425 ₽</div>
+                                        <div class="text-xs text-gray-400 line-through" id="oldPrice6">1500 ₽</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div onclick="selectPeriod(12)" id="period12" class="period-card p-4 rounded-xl border-2 border-gray-600 hover:border-gray-500">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <div class="font-bold">12 месяцев</div>
+                                        <div class="text-sm text-green-400">Скидка 10% 🔥</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-xl font-bold text-blue-500" id="price12Month">2700 ₽</div>
+                                        <div class="text-xs text-gray-400 line-through" id="oldPrice12">3000 ₽</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-700 pt-6 mb-6"></div>
+
+                    <h3 class="text-xl font-bold mb-4">Базовый пакет</h3>
+                    <div class="p-5 rounded-xl border-2 mb-4 border-blue-500 bg-blue-900/30 shadow-lg">
+                        <div class="text-3xl mb-2">📺</div>
+                        <div class="font-bold text-lg">Базовый пакет</div>
+                        <div class="text-sm text-gray-400"><span id="baseChannels">200</span> каналов</div>
+                        <div class="text-xl font-bold mt-2 text-blue-500">Включено</div>
+                    </div>
+
+                    <h3 class="text-xl font-bold mb-4">Дополнительные опции</h3>
+                    <div onclick="toggleAddon('sport')" class="p-5 rounded-xl border-2 mb-4 cursor-pointer transition-all package-item flex items-center border-gray-600 hover:border-gray-500" id="sportPackage">
+                        <div class="mr-3 w-5 h-5 rounded border-2 flex items-center justify-center transition-all border-gray-500" id="sportCheck"></div>
+                        <div class="flex-1">
+                            <div class="font-bold">Спорт</div>
+                            <div class="text-sm text-gray-400">652 каналов</div>
+                        </div>
+                        <div class="font-bold text-lg">+400 ₽/мес</div>
+                    </div>
+
+                    <div onclick="toggleAddon('erotica')" class="p-5 rounded-xl border-2 mb-4 cursor-pointer transition-all package-item flex items-center border-gray-600 hover:border-gray-500" id="eroticaPackage">
+                        <div class="mr-3 w-5 h-5 rounded border-2 flex items-center justify-center transition-all border-gray-500" id="eroticaCheck"></div>
+                        <div class="flex-1">
+                            <div class="font-bold">Эротика</div>
+                            <div class="text-sm text-gray-400">127 каналов</div>
+                        </div>
+                        <div class="font-bold text-lg">+500 ₽/мес</div>
+                    </div>
+
+                    <div class="p-5 rounded-xl mt-6 bg-gradient-to-r from-blue-900/40 to-purple-900/40">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-lg">Итого:</span>
+                            <span class="text-3xl font-extrabold text-blue-500">
+                                <span id="totalPrice">250</span> ₽
+                            </span>
+                        </div>
+                        <div class="text-sm text-gray-400 text-right" id="periodInfo">За 1 месяц</div>
+                    </div>
+                </div>
+
+                <div class="p-8 max-h-[80vh] overflow-y-auto">
+                    <h2 class="text-3xl font-bold mb-6">Регистрация</h2>
+                    
+                    <form id="orderForm" class="space-y-5 mb-8">
+                        <div>
+                            <label class="block text-sm font-bold mb-2">Ваше имя</label>
+                            <input type="text" id="nameInput" class="w-full px-4 py-3 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Иван Иванов" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-2">Email адрес</label>
+                            <input type="email" id="emailInput" class="w-full px-4 py-3 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="email@example.com" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-2">Придумайте пароль</label>
+                            <input type="password" id="passwordInput" class="w-full px-4 py-3 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
+                            <p class="text-xs text-gray-400 mt-1">Минимум 6 символов</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-2">Промокод (необязательно)</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="promoInput" class="flex-1 px-4 py-3 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="PROMO123">
+                                <button type="button" onclick="applyPromo()" class="px-6 py-3 rounded-xl font-bold bg-green-600 hover:bg-green-700">Применить</button>
+                            </div>
+                            <p id="promoMessage" class="text-sm mt-2 hidden"></p>
+                        </div>
+
+                        <p id="emailError" class="text-red-500 text-sm hidden"></p>
+                    </form>
+
+                    <div class="p-6 rounded-xl mb-6 bg-gray-700">
+                        <div class="text-sm opacity-75 mb-1">К оплате:</div>
+                        <div class="text-4xl font-extrabold text-blue-500"><span id="finalPrice">250</span> ₽</div>
+                        <div class="text-sm opacity-75 mt-1" id="finalPeriodInfo">За 1 месяц</div>
+                    </div>
+
+                    <button onclick="submitForm()" class="w-full px-6 py-4 rounded-xl font-bold text-lg text-white transition-all bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 active:scale-95 hover:scale-105 shadow-lg">
+                        Зарегистрироваться
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-50 p-4">
+        <div class="bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-10 text-center animate-scale-in">
+            <div class="mb-6 flex justify-center">
+                <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" class="success-checkmark" />
+                        <polyline points="22 4 12 14.01 9 11.01" class="success-checkmark" />
+                    </svg>
+                </div>
+            </div>
+            <h2 class="text-3xl font-extrabold mb-4">Регистрация успешна!</h2>
+            <p class="mb-4 text-lg text-gray-400">
+                Ваш аккаунт создан. Данные для доступа к IPTV появятся в личном кабинете после проверки администратором.
+            </p>
+            <div class="bg-gray-700 rounded-xl p-4 mb-6">
+                <p class="text-sm text-gray-300 mb-2">Ваши данные для входа:</p>
+                <p class="text-sm"><span class="text-gray-400">Email:</span> <span class="font-bold" id="successEmail"></span></p>
+                <p class="text-sm"><span class="text-gray-400">Пароль:</span> <span class="font-bold">тот, который вы указали</span></p>
+            </div>
+            <button onclick="closeSuccessModal()" class="w-full px-6 py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all active:scale-95 hover:scale-105 shadow-lg mb-3">
+                Вернуться на сайт
+            </button>
+            <button onclick="closeSuccessAndOpenCabinet()" class="w-full px-6 py-4 rounded-xl font-bold text-lg text-white bg-green-600 hover:bg-green-700 transition-all active:scale-95 hover:scale-105 shadow-lg">
+                Перейти в личный кабинет
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- User Cabinet Login -->
+<div id="userLoginPanel" class="hidden min-h-screen flex items-center justify-center bg-gray-900 p-4">
+    <div class="bg-gray-800 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-white">Личный кабинет</h1>
+            <p class="text-gray-400 mt-2">Войдите в свой аккаунт</p>
+        </div>
+        
+        <form id="userLoginForm" class="space-y-4" onsubmit="userLogin(event)">
+            <div>
+                <label class="block text-sm font-bold mb-2 text-white">Email</label>
+                <input type="email" id="userLoginEmail" class="w-full px-4 py-3 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="email@example.com" required>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold mb-2 text-white">Пароль</label>
+                <input type="password" id="userLoginPassword" class="w-full px-4 py-3 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••" required>
+            </div>
+            
+            <p id="userLoginError" class="text-red-500 text-sm hidden"></p>
+            
+            <button type="submit" class="w-full px-6 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all">
+                Войти
+            </button>
+        </form>
+        
+        <button onclick="backToMain()" class="w-full mt-4 px-6 py-3 rounded-xl font-bold text-white bg-gray-700 hover:bg-gray-600 transition-all">
+            Назад на главную
+        </button>
+    </div>
+</div>
+
+<!-- User Cabinet -->
+<div id="userCabinet" class="hidden min-h-screen bg-gray-900 p-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Личный кабинет</h1>
+            <button onclick="userLogout()" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition-all">
+                Выйти
+            </button>
+        </div>
+        
+        <div class="grid gap-6">
+            <!-- User Info -->
+            <div class="bg-gray-800 rounded-2xl p-6">
+                <h2 class="text-2xl font-bold mb-4">Информация о подписке</h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Имя:</span>
+                        <span class="font-bold" id="userCabinetName">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Email:</span>
+                        <span class="font-bold" id="userCabinetEmail">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Страна:</span>
+                        <span class="font-bold" id="userCabinetCountry">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Срок подписки:</span>
+                        <span class="font-bold" id="userCabinetPeriod">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Дата окончания:</span>
+                        <span class="font-bold" id="userCabinetEndDate">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Статус:</span>
+                        <span class="font-bold" id="userCabinetStatus">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- IPTV Data -->
+            <div class="bg-gray-800 rounded-2xl p-6" id="iptvDataSection">
+                <h2 class="text-2xl font-bold mb-4">Данные для IPTV</h2>
+                <div id="iptvDataContent" class="hidden">
+                    <div class="bg-gray-700 rounded-xl p-4 mb-4">
+                        <div class="mb-3">
+                            <span class="text-gray-400 text-sm">Логин IPTV:</span>
+                            <p class="font-bold text-lg" id="userIptvLogin">-</p>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 text-sm">Пароль IPTV:</span>
+                            <p class="font-bold text-lg" id="userIptvPassword">-</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-400">Используйте эти данные для входа в IPTV приложение</p>
+                </div>
+                <div id="iptvDataPending" class="text-center py-8">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"></path>
+                    </svg>
+                    <p class="text-gray-400">Данные для доступа появятся после проверки администратором</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Panel -->
+<div id="adminPanel" class="hidden min-h-screen bg-gray-900">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="w-64 bg-gray-800 min-h-screen p-4">
+            <div class="mb-8">
+                <div class="flex items-center gap-2 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold">TV</span>
+                    </div>
+                    <span class="text-lg font-bold">Admin Panel</span>
+                </div>
+            </div>
+            
+            <nav class="space-y-2">
+                <button onclick="showAdminSection('dashboard')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-all admin-nav-item" data-section="dashboard">
+                    📊 Dashboard
+                </button>
+                <button onclick="showAdminSection('users')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-all admin-nav-item" data-section="users">
+                    👥 Пользователи
+                </button>
+                <button onclick="showAdminSection('countries')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-all admin-nav-item" data-section="countries">
+                    🌍 Страны
+                </button>
+                <button onclick="showAdminSection('packages')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-all admin-nav-item" data-section="packages">
+                    📦 Пакеты
+                </button>
+                <button onclick="showAdminSection('promocodes')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-all admin-nav-item" data-section="promocodes">
+                    🎁 Промокоды
+                </button>
+                <button onclick="showAdminSection('settings')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-700 transition-all admin-nav-item" data-section="settings">
+                    ⚙️ Настройки
+                </button>
+            </nav>
+            
+            <button onclick="adminLogout()" class="w-full mt-8 px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition-all">
+                Выйти
+            </button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+            <!-- Dashboard -->
+            <div id="adminDashboard" class="admin-section">
+                <h1 class="text-3xl font-bold mb-8">Dashboard</h1>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gray-800 rounded-2xl p-6">
+                        <div class="text-gray-400 text-sm mb-2">Всего пользователей</div>
+                        <div class="text-3xl font-bold" id="statTotalUsers">0</div>
+                    </div>
+                    <div class="bg-gray-800 rounded-2xl p-6">
+                        <div class="text-gray-400 text-sm mb-2">Активные подписки</div>
+                        <div class="text-3xl font-bold text-green-500" id="statActiveUsers">0</div>
+                    </div>
+                    <div class="bg-gray-800 rounded-2xl p-6">
+                        <div class="text-gray-400 text-sm mb-2">Доход за месяц</div>
+                        <div class="text-3xl font-bold text-blue-500" id="statRevenue">0 ₽</div>
+                    </div>
+                    <div class="bg-gray-800 rounded-2xl p-6">
+                        <div class="text-gray-400 text-sm mb-2">Истекают скоро</div>
+                        <div class="text-3xl font-bold text-yellow-500" id="statExpiring">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Users Section -->
+            <div id="adminUsers" class="admin-section hidden">
+                <h1 class="text-3xl font-bold mb-8">Управление пользователями</h1>
+                
+                <div class="bg-gray-800 rounded-2xl p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-gray-700">
+                                    <th class="text-left py-3 px-4">Имя</th>
+                                    <th class="text-left py-3 px-4">Email</th>
+                                    <th class="text-left py-3 px-4">Страна</th>
+                                    <th class="text-left py-3 px-4">Окончание</th>
+                                    <th class="text-left py-3 px-4">Статус</th>
+                                    <th class="text-left py-3 px-4">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center py-8 text-gray-400">Загрузка...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Countries Section -->
+            <div id="adminCountries" class="admin-section hidden">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-bold">Управление странами</h1>
+                    <button onclick="showAddCountryModal()" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold">
+                        + Добавить страну
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="countriesAdminGrid">
+                    <div class="text-center py-8 text-gray-400">Загрузка...</div>
+                </div>
+            </div>
+            
+            <!-- Packages Section -->
+            <div id="adminPackages" class="admin-section hidden">
+                <h1 class="text-3xl font-bold mb-8">Управление пакетами</h1>
+                
+                <div class="grid gap-6">
+                    <div class="bg-gray-800 rounded-2xl p-6">
+                        <h3 class="text-xl font-bold mb-4">Спорт</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm mb-2">Количество каналов</label>
+                                <input type="number" id="sportChannels" class="w-full px-4 py-2 rounded-lg bg-gray-700 border-gray-600 text-white" value="652">
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-2">Цена (₽/мес)</label>
+                                <input type="number" id="sportPrice" class="w-full px-4 py-2 rounded-lg bg-gray-700 border-gray-600 text-white" value="400">
+                            </div>
+                        </div>
+                        <button onclick="updatePackage('sport')" class="mt-4 px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700">
+                            Сохранить
+                        </button>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-2xl p-6">
+                        <h3 class="text-xl font-bold mb-4">Эротика</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm mb-2">Количество каналов</label>
+                                <input type="number" id="eroticaChannels" class="w-full px-4 py-2 rounded-lg bg-gray-700 border-gray-600 text-white" value="127">
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-2">Цена (₽/мес)</label>
+                                <input type="number" id="eroticaPrice" class="w-full px-4 py-2 rounded-lg bg-gray-700 border-gray-600 text-white" value="500">
+                            </div>
+                        </div>
+                        <button onclick="updatePackage('erotica')" class="mt-4 px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700">
+                            Сохранить
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Promocodes Section -->
+            <div id="adminPromocodes" class="admin-section hidden">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-bold">Управление промокодами</h1>
+                    <button onclick="showAddPromoModal()" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold">
+                        + Создать промокод
+                    </button>
+                </div>
+                
+                <div class="bg-gray-800 rounded-2xl p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-gray-700">
+                                    <th class="text-left py-3 px-4">Код</th>
+                                    <th class="text-left py-3 px-4">Скидка</th>
+                                    <th class="text-left py-3 px-4">Использовано</th>
+                                    <th class="text-left py-3 px-4">Макс. использований</th>
+                                    <th class="text-left py-3 px-4">Истекает</th>
+                                    <th class="text-left py-3 px-4">Статус</th>
+                                    <th class="text-left py-3 px-4">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="promocodesTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center py-8 text-gray-400">Загрузка...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Section -->
+            <div id="adminSettings" class="admin-section hidden">
+                <h1 class="text-3xl font-bold mb-8">Настройки сайта</h1>
+                
+                <div class="bg-gray-800 rounded-2xl p-6">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold mb-2">Название сайта</label>
+                            <input type="text" id="settingSiteName" class="w-full px-4 py-3 rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="MyTVS">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold mb-2">Заголовок Hero секции</label>
+                            <input type="text" id="settingHeroTitle" class="w-full px-4 py-3 rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="IPTV сервис без границ">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold mb-2">Подзаголовок Hero секции</label>
+                            <textarea id="settingHeroSubtitle" class="w-full px-4 py-3 rounded-lg bg-gray-700 border-gray-600 text-white" rows="3" placeholder="Смотрите любимые телеканалы..."></textarea>
+                        </div>
+                        
+                        <button onclick="saveSettings()" class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold">
+                            Сохранить настройки
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="bg-gray-800 rounded-2xl p-8 flex flex-col items-center gap-4">
+        <div class="loader w-12 h-12 text-blue-500"></div>
+        <p class="text-lg font-semibold" id="loadingText">Загрузка...</p>
+    </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div id="confirmDeleteModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-gray-800 rounded-2xl p-8 max-w-md w-full">
+        <h2 class="text-2xl font-bold mb-4">Подтверждение удаления</h2>
+        <p class="mb-6 text-gray-400" id="confirmDeleteText">Вы уверены, что хотите удалить этот элемент?</p>
+        <div class="flex gap-4">
+            <button onclick="confirmDelete()" class="flex-1 px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 font-bold">
+                Удалить
+            </button>
+            <button onclick="cancelDelete()" class="flex-1 px-6 py-3 rounded-xl bg-gray-700 hover:bg-gray-600 font-bold">
+                Отмена
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Country Modal -->
+<div id="countryModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-gray-800 rounded-2xl p-8 max-w-md w-full">
+        <h2 class="text-2xl font-bold mb-6" id="countryModalTitle">Добавить страну</h2>
+        
+        <div class="space-y-4 mb-6">
+            <div>
+                <label class="block text-sm mb-2">Название (RU)</label>
+                <input type="text" id="countryName" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white" placeholder="Россия">
+            </div>
+            <div>
+                <label class="block text-sm mb-2">Название (EN)</label>
+                <input type="text" id="countryNameEn" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white" placeholder="Russia">
+            </div>
+            <div>
+                <label class="block text-sm mb-2">Флаг (эмодзи)</label>
+                <input type="text" id="countryFlag" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white" placeholder="🇷🇺" maxlength="2">
+            </div>
+            <div>
+                <label class="block text-sm mb-2">Количество каналов</label>
+                <input type="number" id="countryChannels" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white" placeholder="200" min="1">
+            </div>
+            <div>
+                <label class="block text-sm mb-2">Цена (₽/мес)</label>
+                <input type="number" id="countryPrice" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white" placeholder="250" min="0">
+            </div>
+        </div>
+        
+        <div class="flex gap-4">
+            <button onclick="saveCountry()" class="flex-1 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold">
+                Сохранить
+            </button>
+            <button onclick="closeCountryModal()" class="flex-1 px-6 py-3 rounded-xl bg-gray-700 hover:bg-gray-600 font-bold">
+                Отмена
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div id="editUserModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-gray-800 rounded-2xl p-8 max-w-2xl w-full">
+        <h2 class="text-2xl font-bold mb-6">Редактировать пользователя</h2>
+        
+        <div class="space-y-4 mb-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm mb-2">Имя</label>
+                    <input type="text" id="editUserName" class="w-full px-4 py-2 rounded-lg bg-gray-700">
+                </div>
+                <div>
+                    <label class="block text-sm mb-2">Email</label>
+                    <input type="email" id="editUserEmail" class="w-full px-4 py-2 rounded-lg bg-gray-700" disabled>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm mb-2">Логин IPTV</label>
+                    <input type="text" id="editUserIptvLogin" class="w-full px-4 py-2 rounded-lg bg-gray-700">
+                </div>
+                <div>
+                    <label class="block text-sm mb-2">Пароль IPTV</label>
+                    <input type="text" id="editUserIptvPassword" class="w-full px-4 py-2 rounded-lg bg-gray-700">
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm mb-2">Заметки</label>
+                <textarea id="editUserNotes" class="w-full px-4 py-2 rounded-lg bg-gray-700" rows="3"></textarea>
+            </div>
+        </div>
+        
+        <div class="flex gap-4">
+            <button onclick="saveUserEdit()" class="flex-1 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold">
+                Сохранить
+            </button>
+            <button onclick="closeEditUserModal()" class="flex-1 px-6 py-3 rounded-xl bg-gray-700 hover:bg-gray-600 font-bold">
+                Отмена
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global State
+let currentUser = null;
+let currentAdmin = false;
+let adminToken = null;
+let userToken = null;
+let selectedCountry = null;
+let selectedPeriod = 1;
+let selectedAddons = [];
+let countries = [];
+let packages = {};
+let appliedPromo = null;
+let editingUserId = null;
+let currentTheme = 'dark';
+let currentLang = 'ru';
+let deleteCallback = null;
+let deleteParams = null;
+let editingCountryId = null;
+
+// JWT Token Management
+function getAuthToken() {
+    return adminToken || userToken || localStorage.getItem('adminToken') || localStorage.getItem('userToken');
+}
+
+function setAdminToken(token) {
+    adminToken = token;
+    localStorage.setItem('adminToken', token);
+}
+
+function setUserToken(token) {
+    userToken = token;
+    localStorage.setItem('userToken', token);
+}
+
+function clearTokens() {
+    adminToken = null;
+    userToken = null;
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('userToken');
+}
+
+// Load tokens on page load
+function loadTokens() {
+    adminToken = localStorage.getItem('adminToken');
+    userToken = localStorage.getItem('userToken');
+}
+
+// Fetch with authentication
+async function fetchWithAuth(url, options = {}) {
+    const token = getAuthToken();
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+    };
+    
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return fetch(url, {
+        ...options,
+        headers
+    });
+}
+
+// Translations
+const translations = {
+    ru: {
+        personalCabinet: 'Личный кабинет',
+        selectCountry: 'Выбрать страну',
+        loading: 'Загрузка...',
+        confirmDelete: 'Подтверждение удаления',
+        confirmDeleteText: 'Вы уверены, что хотите удалить этот элемент?',
+        delete: 'Удалить',
+        cancel: 'Отмена',
+        edit: 'Редактировать',
+        save: 'Сохранить',
+        back: 'Назад',
+        login: 'Войти',
+        logout: 'Выйти',
+        emailExists: 'Email уже используется',
+        error: 'Ошибка',
+        success: 'Успешно'
+    },
+    en: {
+        personalCabinet: 'Personal Cabinet',
+        selectCountry: 'Select Country',
+        loading: 'Loading...',
+        confirmDelete: 'Confirm Deletion',
+        confirmDeleteText: 'Are you sure you want to delete this item?',
+        delete: 'Delete',
+        cancel: 'Cancel',
+        edit: 'Edit',
+        save: 'Save',
+        back: 'Back',
+        login: 'Login',
+        logout: 'Logout',
+        emailExists: 'Email already in use',
+        error: 'Error',
+        success: 'Success'
+    }
+};
+
+// API Base URL
+const API_URL = '';
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadTokens();
+    loadTheme();
+    loadLanguage();
+    initThemeToggle();
+    initLanguageToggle();
+    checkAdminHash();
+    loadCountries();
+    loadCustomization();
+});
+
+// Check for admin hash
+function checkAdminHash() {
+    const hash = window.location.hash;
+    if (hash === '#/admin1973') {
+        showAdminLogin();
+    }
+}
+
+// Scroll to countries
+function scrollToCountries() {
+    document.getElementById('countries').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Loading indicator
+function showLoading(text = 'Загрузка...') {
+    document.getElementById('loadingText').textContent = text;
+    document.getElementById('loadingOverlay').classList.remove('hidden');
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').classList.add('hidden');
+}
+
+// Error handling
+function showError(message) {
+    alert(`Ошибка: ${message}`);
+}
+
+function showSuccess(message) {
+    alert(`Успешно: ${message}`);
+}
+
+// Theme management
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+}
+
+function setTheme(theme) {
+    currentTheme = theme;
+    const body = document.getElementById('bodyElement');
+    if (theme === 'light') {
+        body.classList.add('light-theme');
+        document.getElementById('moonIcon').innerHTML = '<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+    } else {
+        body.classList.remove('light-theme');
+        document.getElementById('moonIcon').innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+    }
+    localStorage.setItem('theme', theme);
+}
+
+function initThemeToggle() {
+    document.getElementById('themeToggle').addEventListener('click', () => {
+        setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+}
+
+// Language management
+function loadLanguage() {
+    const savedLang = localStorage.getItem('language') || 'ru';
+    setLanguage(savedLang);
+}
+
+function setLanguage(lang) {
+    currentLang = lang;
+    document.getElementById('langText').textContent = lang.toUpperCase();
+    localStorage.setItem('language', lang);
+    // Update translations (simplified - can be expanded)
+}
+
+function initLanguageToggle() {
+    document.getElementById('langToggle').addEventListener('click', () => {
+        setLanguage(currentLang === 'ru' ? 'en' : 'ru');
+    });
+}
+
+// Load countries from API
+async function loadCountries() {
+    try {
+        showLoading('Загрузка стран...');
+        const response = await fetch(`${API_URL}/api/countries`);
+        if (!response.ok) throw new Error('Ошибка загрузки стран');
+        countries = await response.json();
+        renderCountries();
+        hideLoading();
+    } catch (error) {
+        hideLoading();
+        showError('Не удалось загрузить страны');
+        console.error('Error loading countries:', error);
+    }
+}
+
+// Load customization
+async function loadCustomization() {
+    try {
+        const response = await fetch(`${API_URL}/api/customization`);
+        if (!response.ok) throw new Error('Ошибка загрузки настроек');
+        const data = await response.json();
+        if (data) {
+            document.getElementById('siteName').textContent = data.site_name || 'MyTVS';
+            document.getElementById('heroTitle').textContent = data.hero_title || 'IPTV сервис без границ';
+            document.getElementById('heroSubtitle').textContent = data.hero_subtitle || 'Смотрите любимые телеканалы из любой страны мира в HD качестве';
+        }
+    } catch (error) {
+        console.error('Error loading customization:', error);
+    }
+}
+
+// Render countries
+function renderCountries() {
+    const grid = document.getElementById('countriesGrid');
+    grid.innerHTML = countries.map(country => `
+        <button onclick="selectCountry(${country.id})" class="country-card p-6 rounded-2xl border-2 border-gray-700 hover:border-gray-600 bg-gray-800 transition-all">
+            <div class="text-5xl mb-3">${country.flag}</div>
+            <div class="font-bold text-lg mb-1">${country.name}</div>
+            <div class="text-sm text-gray-400 mb-3">${country.channels} каналов</div>
+            <div class="text-xl font-bold text-blue-500">${country.price} ₽/мес</div>
+        </button>
+    `).join('');
+}
+
+// Select country
+function selectCountry(id) {
+    selectedCountry = countries.find(c => c.id === id);
+    selectedAddons = [];
+    selectedPeriod = 1;
+    document.getElementById('baseChannels').textContent = selectedCountry.channels;
+    updatePrices();
+    document.getElementById('modal').classList.remove('hidden');
+    document.getElementById('modal').classList.add('flex');
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+    document.getElementById('modal').classList.remove('flex');
+    resetForm();
+}
+
+// Select period
+function selectPeriod(months) {
+    selectedPeriod = months;
+    document.querySelectorAll('.period-card').forEach(card => {
+        card.classList.remove('selected', 'border-blue-500', 'bg-blue-900/30');
+        card.classList.add('border-gray-600');
+    });
+    const selectedCard = document.getElementById(`period${months}`);
+    selectedCard.classList.add('selected', 'border-blue-500', 'bg-blue-900/30');
+    selectedCard.classList.remove('border-gray-600');
+    updatePrices();
+}
+
+// Toggle addon
+function toggleAddon(addon) {
+    if (selectedAddons.includes(addon)) {
+        selectedAddons = selectedAddons.filter(a => a !== addon);
+    } else {
+        selectedAddons.push(addon);
+    }
+    
+    const check = document.getElementById(`${addon}Check`);
+    const pkg = document.getElementById(`${addon}Package`);
+    
+    if (selectedAddons.includes(addon)) {
+        check.innerHTML = '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        check.classList.add('bg-blue-500', 'border-blue-500');
+        pkg.classList.add('border-blue-500', 'bg-blue-900/30');
+    } else {
+        check.innerHTML = '';
+        check.classList.remove('bg-blue-500', 'border-blue-500');
+        pkg.classList.remove('border-blue-500', 'bg-blue-900/30');
+    }
+    
+    updatePrices();
+}
+
+// Update prices
+function updatePrices() {
+    if (!selectedCountry) return;
+    
+    let monthlyPrice = selectedCountry.price;
+    
+    // Add addons
+    if (selectedAddons.includes('sport')) monthlyPrice += 400;
+    if (selectedAddons.includes('erotica')) monthlyPrice += 500;
+    
+    // Calculate total for period
+    let totalPrice = monthlyPrice * selectedPeriod;
+    
+    // Apply period discounts
+    if (selectedPeriod === 6) {
+        totalPrice = totalPrice * 0.95; // 5% discount
+    } else if (selectedPeriod === 12) {
+        totalPrice = totalPrice * 0.90; // 10% discount
+    }
+    
+    // Apply promo discount
+    if (appliedPromo) {
+        totalPrice = totalPrice * (1 - appliedPromo.discount / 100);
+    }
+    
+    // Update period prices
+    document.getElementById('price1Month').textContent = `${monthlyPrice} ₽`;
+    document.getElementById('price6Month').textContent = `${Math.round(monthlyPrice * 6 * 0.95)} ₽`;
+    document.getElementById('oldPrice6').textContent = `${monthlyPrice * 6} ₽`;
+    document.getElementById('price12Month').textContent = `${Math.round(monthlyPrice * 12 * 0.90)} ₽`;
+    document.getElementById('oldPrice12').textContent = `${monthlyPrice * 12} ₽`;
+    
+    // Update totals
+    document.getElementById('totalPrice').textContent = Math.round(totalPrice);
+    document.getElementById('finalPrice').textContent = Math.round(totalPrice);
+    
+    // Update period info
+    const periodText = selectedPeriod === 1 ? 'За 1 месяц' : `За ${selectedPeriod} месяцев`;
+    document.getElementById('periodInfo').textContent = periodText;
+    document.getElementById('finalPeriodInfo').textContent = periodText;
+}
+
+// Apply promo code
+async function applyPromo() {
+    const code = document.getElementById('promoInput').value.trim().toUpperCase();
+    if (!code) return;
+    
+    try {
+        showLoading('Проверка промокода...');
+        const response = await fetch(`${API_URL}/api/promocodes/${code}`);
+        if (response.ok) {
+            const promo = await response.json();
+            
+            if (!promo.active) {
+                showPromoMessage('Промокод неактивен', 'error');
+                hideLoading();
+                return;
+            }
+            
+            if (promo.max_uses && promo.used_count >= promo.max_uses) {
+                showPromoMessage('Промокод исчерпан', 'error');
+                hideLoading();
+                return;
+            }
+            
+            if (promo.expiry_date && new Date(promo.expiry_date) < new Date()) {
+                showPromoMessage('Промокод истек', 'error');
+                hideLoading();
+                return;
+            }
+            
+            appliedPromo = promo;
+            showPromoMessage(`Промокод применен! Скидка ${promo.discount}%`, 'success');
+            updatePrices();
+        } else {
+            showPromoMessage('Промокод не найден', 'error');
+        }
+        hideLoading();
+    } catch (error) {
+        hideLoading();
+        showPromoMessage('Ошибка проверки промокода', 'error');
+    }
+}
+
+// Show promo message
+function showPromoMessage(text, type) {
+    const msg = document.getElementById('promoMessage');
+    msg.textContent = text;
+    msg.className = `text-sm mt-2 ${type === 'success' ? 'text-green-400' : 'text-red-400'}`;
+    msg.classList.remove('hidden');
+}
+
+// Submit form
+async function submitForm() {
+    const name = document.getElementById('nameInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('passwordInput').value;
+    
+    // Validation
+    if (!name || !email || !password) {
+        document.getElementById('emailError').textContent = 'Заполните все поля';
+        document.getElementById('emailError').classList.remove('hidden');
+        return;
+    }
+    
+    if (password.length < 6) {
+        document.getElementById('emailError').textContent = 'Пароль должен содержать минимум 6 символов';
+        document.getElementById('emailError').classList.remove('hidden');
+        return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        document.getElementById('emailError').textContent = 'Введите корректный email';
+        document.getElementById('emailError').classList.remove('hidden');
+        return;
+    }
+    
+    // Calculate dates
+    const startDate = new Date().toISOString();
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + selectedPeriod);
+    
+    // Calculate final price
+    let monthlyPrice = selectedCountry.price;
+    if (selectedAddons.includes('sport')) monthlyPrice += 400;
+    if (selectedAddons.includes('erotica')) monthlyPrice += 500;
+    let totalPrice = monthlyPrice * selectedPeriod;
+    if (selectedPeriod === 6) totalPrice *= 0.95;
+    if (selectedPeriod === 12) totalPrice *= 0.90;
+    if (appliedPromo) totalPrice *= (1 - appliedPromo.discount / 100);
+    
+    const userData = {
+        name,
+        email,
+        password,
+        country: selectedCountry.name,
+        countryId: selectedCountry.id,
+        addons: selectedAddons,
+        period: selectedPeriod,
+        price: Math.round(totalPrice),
+        promoCode: appliedPromo?.code || null,
+        startDate,
+        endDate: endDate.toISOString(),
+        status: 'active'
+    };
+    
+    try {
+        showLoading('Регистрация...');
+        document.getElementById('emailError').classList.add('hidden');
+        
+        const response = await fetch(`${API_URL}/api/users`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        });
+        
+        if (response.ok) {
+            document.getElementById('successEmail').textContent = email;
+            closeModal();
+            document.getElementById('successModal').classList.remove('hidden');
+            document.getElementById('successModal').classList.add('flex');
+            hideLoading();
+        } else {
+            const error = await response.json();
+            const errorMessage = error.error || 'Ошибка регистрации';
+            document.getElementById('emailError').textContent = errorMessage;
+            document.getElementById('emailError').classList.remove('hidden');
+            hideLoading();
+        }
+    } catch (error) {
+        hideLoading();
+        document.getElementById('emailError').textContent = 'Ошибка подключения к серверу';
+        document.getElementById('emailError').classList.remove('hidden');
+    }
+}
+
+// Reset form
+function resetForm() {
+    document.getElementById('nameInput').value = '';
+    document.getElementById('emailInput').value = '';
+    document.getElementById('passwordInput').value = '';
+    document.getElementById('promoInput').value = '';
+    document.getElementById('emailError').classList.add('hidden');
+    document.getElementById('promoMessage').classList.add('hidden');
+    selectedAddons = [];
+    appliedPromo = null;
+    selectedPeriod = 1;
+}
+
+// Close success modal
+function closeSuccessModal() {
+    document.getElementById('successModal').classList.add('hidden');
+    document.getElementById('successModal').classList.remove('flex');
+}
+
+// Close success and open cabinet
+function closeSuccessAndOpenCabinet() {
+    closeSuccessModal();
+    showUserLogin();
+}
+
+// Show user login
+function showUserLogin() {
+    document.getElementById('mainSite').classList.add('hidden');
+    document.getElementById('userLoginPanel').classList.remove('hidden');
+}
+
+// Back to main
+function backToMain() {
+    document.getElementById('mainSite').classList.remove('hidden');
+    document.getElementById('userLoginPanel').classList.add('hidden');
+    document.getElementById('userCabinet').classList.add('hidden');
+    document.getElementById('adminPanel').classList.add('hidden');
+}
+
+// User login
+async function userLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('userLoginEmail').value;
+    const password = document.getElementById('userLoginPassword').value;
+    
+    try {
+        showLoading('Вход...');
+        document.getElementById('userLoginError').classList.add('hidden');
+        
+        const response = await fetch(`${API_URL}/api/user/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            currentUser = data.user;
+            if (data.token) {
+                setUserToken(data.token);
+            }
+            hideLoading();
+            showUserCabinet();
+        } else {
+            hideLoading();
+            document.getElementById('userLoginError').textContent = 'Неверный email или пароль';
+            document.getElementById('userLoginError').classList.remove('hidden');
+        }
+    } catch (error) {
+        hideLoading();
+        document.getElementById('userLoginError').textContent = 'Ошибка подключения';
+        document.getElementById('userLoginError').classList.remove('hidden');
+    }
+}
+
+// Show user cabinet
+function showUserCabinet() {
+    document.getElementById('userLoginPanel').classList.add('hidden');
+    document.getElementById('userCabinet').classList.remove('hidden');
+    
+    // Fill user data
+    document.getElementById('userCabinetName').textContent = currentUser.name;
+    document.getElementById('userCabinetEmail').textContent = currentUser.email;
+    document.getElementById('userCabinetCountry').textContent = currentUser.country;
+    document.getElementById('userCabinetPeriod').textContent = `${currentUser.period} мес.`;
+    document.getElementById('userCabinetEndDate').textContent = new Date(currentUser.end_date).toLocaleDateString('ru-RU');
+    document.getElementById('userCabinetStatus').textContent = currentUser.status === 'active' ? 'Активна' : 'Неактивна';
+    
+    // Show IPTV data if exists
+    if (currentUser.iptv_login && currentUser.iptv_password) {
+        document.getElementById('iptvDataPending').classList.add('hidden');
+        document.getElementById('iptvDataContent').classList.remove('hidden');
+        document.getElementById('userIptvLogin').textContent = currentUser.iptv_login;
+        document.getElementById('userIptvPassword').textContent = currentUser.iptv_password;
+    } else {
+        document.getElementById('iptvDataPending').classList.remove('hidden');
+        document.getElementById('iptvDataContent').classList.add('hidden');
+    }
+}
+
+// User logout
+function userLogout() {
+    currentUser = null;
+    userToken = null;
+    localStorage.removeItem('userToken');
+    backToMain();
+}
+
+// Show admin login
+function showAdminLogin() {
+    const username = prompt('Введите логин администратора:');
+    const password = prompt('Введите пароль:');
+    
+    if (!username || !password) return;
+    
+    try {
+        showLoading('Вход...');
+        fetch(`${API_URL}/api/admin/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        })
+        .then(res => res.json())
+        .then(data => {
+            hideLoading();
+            if (data.success && data.token) {
+                setAdminToken(data.token);
+                currentAdmin = true;
+                showAdminPanel();
+            } else {
+                showError('Неверные учетные данные');
+            }
+        })
+        .catch(() => {
+            hideLoading();
+            showError('Ошибка подключения');
+        });
+    } catch (error) {
+        hideLoading();
+        showError('Ошибка входа');
+    }
+}
+
+// Show admin panel
+function showAdminPanel() {
+    document.getElementById('mainSite').classList.add('hidden');
+    document.getElementById('adminPanel').classList.remove('hidden');
+    showAdminSection('dashboard');
+    loadAdminData();
+}
+
+// Show admin section
+function showAdminSection(section) {
+    document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+    document.getElementById(`admin${section.charAt(0).toUpperCase() + section.slice(1)}`).classList.remove('hidden');
+    
+    document.querySelectorAll('.admin-nav-item').forEach(item => {
+        item.classList.remove('bg-gray-700');
+    });
+    document.querySelector(`[data-section="${section}"]`).classList.add('bg-gray-700');
+    
+    if (section === 'dashboard') loadStatistics();
+    if (section === 'users') loadUsers();
+    if (section === 'countries') loadAdminCountries();
+    if (section === 'packages') loadPackagesAdmin();
+    if (section === 'promocodes') loadPromocodes();
+    if (section === 'settings') loadSettingsAdmin();
+}
+
+// Load admin data
+function loadAdminData() {
+    loadStatistics();
+}
+
+// Load statistics
+async function loadStatistics() {
+    try {
+        const response = await fetchWithAuth(`${API_URL}/api/statistics`);
+        if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                showError('Требуется авторизация');
+                adminLogout();
+                return;
+            }
+            throw new Error('Ошибка загрузки статистики');
+        }
+        const stats = await response.json();
+        
+        document.getElementById('statTotalUsers').textContent = stats.totalUsers;
+        document.getElementById('statActiveUsers').textContent = stats.activeSubscriptions;
+        document.getElementById('statRevenue').textContent = `${stats.monthlyRevenue} ₽`;
+        document.getElementById('statExpiring').textContent = stats.expiringSoon;
+    } catch (error) {
+        console.error('Error loading statistics:', error);
+    }
+}
+
+// Load users
+async function loadUsers() {
+    try {
+        showLoading('Загрузка пользователей...');
+        const response = await fetchWithAuth(`${API_URL}/api/users`);
+        if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                hideLoading();
+                showError('Требуется авторизация. Пожалуйста, войдите снова.');
+                adminLogout();
+                return;
+            }
+            throw new Error('Ошибка загрузки пользователей');
+        }
+        const users = await response.json();
+        
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = users.map(user => `
+            <tr class="border-b border-gray-700">
+                <td class="py-3 px-4">${user.name}</td>
+                <td class="py-3 px-4">${user.email}</td>
+                <td class="py-3 px-4">${user.country}</td>
+                <td class="py-3 px-4">${new Date(user.end_date).toLocaleDateString('ru-RU')}</td>
+                <td class="py-3 px-4">
+                    <span class="px-3 py-1 rounded-full text-sm ${user.status === 'active' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}">
+                        ${user.status === 'active' ? 'Активна' : 'Неактивна'}
+                    </span>
+                </td>
+                <td class="py-3 px-4">
+                    <button onclick="editUser(${user.id})" class="px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-sm">
+                        Редактировать
+                    </button>
+                    <button onclick="deleteUser(${user.id})" class="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-sm ml-2">
+                        Удалить
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+        hideLoading();
+    } catch (error) {
+        hideLoading();
+        showError('Не удалось загрузить пользователей');
+        console.error('Error loading users:', error);
+    }
+}
+
+// Edit user
+async function editUser(id) {
+    try {
+        showLoading('Загрузка данных пользователя...');
+        const response = await fetchWithAuth(`${API_URL}/api/users/${id}`);
+        if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                hideLoading();
+                showError('Требуется авторизация');
+                adminLogout();
+                return;
+            }
+            hideLoading();
+            showError('Ошибка загрузки данных пользователя');
+            return;
+        }
+        const user = await response.json();
+        hideLoading();
+        
+        editingUserId = id;
+        document.getElementById('editUserName').value = user.name;
+        document.getElementById('editUserEmail').value = user.email;
+        document.getElementById('editUserIptvLogin').value = user.iptv_login || '';
+        document.getElementById('editUserIptvPassword').value = user.iptv_password || '';
+        document.getElementById('editUserNotes').value = user.notes || '';
+        
+        document.getElementById('editUserModal').classList.remove('hidden');
+        document.getElementById('editUserModal').classList.add('flex');
+    } catch (error) {
+        hideLoading();
+        showError('Ошибка загрузки данных пользователя');
+    }
+}
+
+// Save user edit
+async function saveUserEdit() {
+    try {
+        // Get current user data first
+        showLoading('Загрузка данных...');
+        const currentUserResponse = await fetchWithAuth(`${API_URL}/api/users/${editingUserId}`);
+        if (!currentUserResponse.ok) {
+            if (currentUserResponse.status === 401 || currentUserResponse.status === 403) {
+                hideLoading();
+                showError('Требуется авторизация');
+                adminLogout();
+                return;
+            }
+            throw new Error('Не удалось загрузить данные пользователя');
+        }
+        const currentUser = await currentUserResponse.json();
+        
+        const userData = {
+            name: document.getElementById('editUserName').value,
+            iptvLogin: document.getElementById('editUserIptvLogin').value,
+            iptvPassword: document.getElementById('editUserIptvPassword').value,
+            notes: document.getElementById('editUserNotes').value,
+            country: currentUser.country || '',
+            countryId: currentUser.country_id || 0,
+            addons: currentUser.addons || [],
+            period: currentUser.period || 1,
+            price: currentUser.price || 0,
+            startDate: currentUser.start_date || '',
+            endDate: currentUser.end_date || ''
+        };
+        
+        hideLoading();
+        showLoading('Сохранение...');
+        
+        const response = await fetchWithAuth(`${API_URL}/api/users/${editingUserId}`, {
+            method: 'PUT',
+            body: JSON.stringify(userData)
+        });
+        
+        if (response.ok) {
+            hideLoading();
+            closeEditUserModal();
+            loadUsers();
+            showSuccess('Пользователь обновлен');
+        } else {
+            hideLoading();
+            const error = await response.json();
+            showError(error.error || 'Ошибка сохранения');
+        }
+    } catch (error) {
+        hideLoading();
+        showError('Ошибка подключения');
+    }
+}
+
+// Close edit user modal
+function closeEditUserModal() {
+    document.getElementById('editUserModal').classList.add('hidden');
+    document.getElementById('editUserModal').classList.remove('flex');
+    editingUserId = null;
+}
+
+// Delete user
+function deleteUser(id) {
+    deleteCallback = async () => {
+        try {
+            showLoading('Удаление пользователя...');
+            const response = await fetchWithAuth(`${API_URL}/api/users/${id}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                hideLoading();
+                loadUsers();
+                loadStatistics();
+                showSuccess('Пользователь удален');
+            } else {
+                hideLoading();
+                showError('Ошибка удаления');
+            }
+        } catch (error) {
+            hideLoading();
+            showError('Ошибка подключения');
+        }
+    };
+    deleteParams = { type: 'user', id };
+    document.getElementById('confirmDeleteText').textContent = 'Вы уверены, что хотите удалить этого пользователя?';
+    document.getElementById('confirmDeleteModal').classList.remove('hidden');
+    document.getElementById('confirmDeleteModal').classList.add('flex');
+}
+
+// Confirm delete
+function confirmDelete() {
+    if (deleteCallback) {
+        deleteCallback();
+    }
+    cancelDelete();
+}
+
+function cancelDelete() {
+    document.getElementById('confirmDeleteModal').classList.add('hidden');
+    document.getElementById('confirmDeleteModal').classList.remove('flex');
+    deleteCallback = null;
+    deleteParams = null;
+}
+
+// Load admin countries
+async function loadAdminCountries() {
+    try {
+        showLoading('Загрузка стран...');
+        const response = await fetch(`${API_URL}/api/countries`); // Public route
+        if (!response.ok) throw new Error('Ошибка загрузки стран');
+        const countries = await response.json();
+        
+        const grid = document.getElementById('countriesAdminGrid');
+        grid.innerHTML = countries.map(country => `
+            <div class="bg-gray-800 rounded-2xl p-6">
+                <div class="text-5xl mb-3">${country.flag}</div>
+                <div class="font-bold text-lg mb-2">${country.name}</div>
+                <div class="text-sm text-gray-400 mb-1">${country.channels} каналов</div>
+                <div class="text-xl font-bold text-blue-500 mb-4">${country.price} ₽/мес</div>
+                <div class="flex gap-2">
+                    <button onclick="editCountry(${country.id})" class="flex-1 px-3 py-2 rounded bg-blue-600 hover:bg-blue-700 text-sm">
+                        Изменить
+                    </button>
+                    <button onclick="deleteCountry(${country.id})" class="flex-1 px-3 py-2 rounded bg-red-600 hover:bg-red-700 text-sm">
+                        Удалить
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        hideLoading();
+    } catch (error) {
+        hideLoading();
+        showError('Не удалось загрузить страны');
+        console.error('Error loading countries:', error);
+    }
+}
+
+// Show add country modal
+function showAddCountryModal() {
+    editingCountryId = null;
+    document.getElementById('countryModalTitle').textContent = 'Добавить страну';
+    document.getElementById('countryName').value = '';
+    document.getElementById('countryNameEn').value = '';
+    document.getElementById('countryFlag').value = '';
+    document.getElementById('countryChannels').value = '';
+    document.getElementById('countryPrice').value = '';
+    document.getElementById('countryModal').classList.remove('hidden');
+    document.getElementById('countryModal').classList.add('flex');
+}
+
+// Edit country
+async function editCountry(id) {
+    try {
+        showLoading('Загрузка данных страны...');
+        const response = await fetch(`${API_URL}/api/countries`);
+        if (!response.ok) throw new Error('Ошибка загрузки стран');
+        const countries = await response.json();
+        const country = countries.find(c => c.id === id);
+        
+        if (!country) {
+            hideLoading();
+            showError('Страна не найдена');
+            return;
+        }
+        
+        editingCountryId = id;
+        document.getElementById('countryModalTitle').textContent = 'Редактировать страну';
+        document.getElementById('countryName').value = country.name;
+        document.getElementById('countryNameEn').value = country.name_en;
+        document.getElementById('countryFlag').value = country.flag;
+        document.getElementById('countryChannels').value = country.channels;
+        document.getElementById('countryPrice').value = country.price;
+        
+        hideLoading();
+        document.getElementById('countryModal').classList.remove('hidden');
+        document.getElementById('countryModal').classList.add('flex');
+    } catch (error) {
+        hideLoading();
+        showError('Ошибка загрузки данных');
+    }
+}
+
+// Save country
+async function saveCountry() {
+    const name = document.getElementById('countryName').value.trim();
+    const nameEn = document.getElementById('countryNameEn').value.trim();
+    const flag = document.getElementById('countryFlag').value.trim();
+    const channels = parseInt(document.getElementById('countryChannels').value);
+    const price = parseInt(document.getElementById('countryPrice').value);
+    
+    if (!name || !nameEn || !flag || !channels || !price) {
+        showError('Заполните все поля');
+        return;
+    }
+    
+    try {
+        showLoading(editingCountryId ? 'Сохранение...' : 'Добавление страны...');
+        
+        const countryData = { name, nameEn, flag, channels, price };
+        
+        if (editingCountryId) {
+            const response = await fetchWithAuth(`${API_URL}/api/countries/${editingCountryId}`, {
+                method: 'PUT',
+                body: JSON.stringify(countryData)
+            });
+            
+            if (response.ok) {
+                hideLoading();
+                closeCountryModal();
+                loadAdminCountries();
+                loadCountries();
+                showSuccess('Страна обновлена');
+            } else {
+                hideLoading();
+                if (response.status === 401 || response.status === 403) {
+                    showError('Требуется авторизация');
+                    adminLogout();
+                } else {
+                    showError('Ошибка обновления');
+                }
+            }
+        } else {
+            const response = await fetchWithAuth(`${API_URL}/api/countries`, {
+                method: 'POST',
+                body: JSON.stringify(countryData)
+            });
+            
+            if (response.ok) {
+                hideLoading();
+                closeCountryModal();
+                loadAdminCountries();
+                loadCountries();
+                showSuccess('Страна добавлена');
+            } else {
+                hideLoading();
+                if (response.status === 401 || response.status === 403) {
+                    showError('Требуется авторизация');
+                    adminLogout();
+                } else {
+                    showError('Ошибка добавления');
+                }
+            }
+        }
+    } catch (error) {
+        hideLoading();
+        showError('Ошибка подключения');
+    }
+}
+
+// Close country modal
+function closeCountryModal() {
+    document.getElementById('countryModal').classList.add('hidden');
+    document.getElementById('countryModal').classList.remove('flex');
+    editingCountryId = null;
+}
+
+// Delete country
+function deleteCountry(id) {
+    deleteCallback = async () => {
+        try {
+            showLoading('Удаление страны...');
+            const response = await fetchWithAuth(`${API_URL}/api/countries/${id}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                hideLoading();
+                loadAdminCountries();
+                loadCountries();
+                showSuccess('Страна удалена');
+            } else {
+                hideLoading();
+                showError('Ошибка удаления');
+            }
+        } catch (error) {
+            hideLoading();
+            showError('Ошибка подключения');
+        }
+    };
+    deleteParams = { type: 'country', id };
+    document.getElementById('confirmDeleteText').textContent = 'Вы уверены, что хотите удалить эту страну?';
+    document.getElementById('confirmDeleteModal').classList.remove('hidden');
+    document.getElementById('confirmDeleteModal').classList.add('flex');
+}
+
+// Load packages admin
+async function loadPackagesAdmin() {
+    try {
+        const response = await fetch(`${API_URL}/api/packages`);
+        packages = await response.json();
+        
+        document.getElementById('sportChannels').value = packages.sport?.channels || 652;
+        document.getElementById('sportPrice').value = packages.sport?.price || 400;
+        document.getElementById('eroticaChannels').value = packages.erotica?.channels || 127;
+        document.getElementById('eroticaPrice').value = packages.erotica?.price || 500;
+    } catch (error) {
+        console.error('Error loading packages:', error);
+    }
+}
+
+// Update package
+async function updatePackage(key) {
+    const channels = document.getElementById(`${key}Channels`).value;
+    const price = document.getElementById(`${key}Price`).value;
+    
+    try {
+        const response = await fetchWithAuth(`${API_URL}/api/packages/${key}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                nameRu: key === 'sport' ? 'Спорт' : 'Эротика',
+                nameEn: key === 'sport' ? 'Sports' : 'Erotica',
+                channels: parseInt(channels),
+                price: parseInt(price)
+            })
+        });
+        
+        if (response.ok) {
+            showSuccess('Пакет обновлен');
+        } else {
+            if (response.status === 401 || response.status === 403) {
+                showError('Требуется авторизация');
+                adminLogout();
+            } else {
+                showError('Ошибка обновления');
+            }
+        }
+    } catch (error) {
+        alert('Ошибка подключения');
+    }
+}
+
+// Load promocodes
+async function loadPromocodes() {
+    try {
+        showLoading('Загрузка промокодов...');
+        const response = await fetchWithAuth(`${API_URL}/api/promocodes`);
+        if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                hideLoading();
+                showError('Требуется авторизация');
+                adminLogout();
+                return;
+            }
+            throw new Error('Ошибка загрузки промокодов');
+        }
+        const promos = await response.json();
+        
+        const tbody = document.getElementById('promocodesTableBody');
+        tbody.innerHTML = promos.map(promo => `
+            <tr class="border-b border-gray-700">
+                <td class="py-3 px-4 font-bold">${promo.code}</td>
+                <td class="py-3 px-4">${promo.discount}%</td>
+                <td class="py-3 px-4">${promo.used_count}</td>
+                <td class="py-3 px-4">${promo.max_uses || '∞'}</td>
+                <td class="py-3 px-4">${promo.expiry_date ? new Date(promo.expiry_date).toLocaleDateString('ru-RU') : 'Без срока'}</td>
+                <td class="py-3 px-4">
+                    <span class="px-3 py-1 rounded-full text-sm ${promo.active ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}">
+                        ${promo.active ? 'Активен' : 'Неактивен'}
+                    </span>
+                </td>
+                <td class="py-3 px-4">
+                    <button onclick="togglePromoStatus('${promo.code}', ${!promo.active})" class="px-3 py-1 rounded ${promo.active ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'} text-sm">
+                        ${promo.active ? 'Деактивировать' : 'Активировать'}
+                    </button>
+                    <button onclick="deletePromo('${promo.code}')" class="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-sm ml-2">
+                        Удалить
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+        hideLoading();
+    } catch (error) {
+        hideLoading();
+        showError('Не удалось загрузить промокоды');
+        console.error('Error loading promocodes:', error);
+    }
+}
+
+// Show add promo modal
+function showAddPromoModal() {
+    const code = prompt('Введите код промокода:');
+    if (!code) return;
+    
+    const discount = parseInt(prompt('Скидка в % (например, 10):'));
+    if (!discount || discount < 1 || discount > 100) {
+        alert('Неверная скидка');
+        return;
+    }
+    
+    const maxUses = prompt('Максимальное количество использований (оставьте пустым для неограниченного):');
+    const expiryDate = prompt('Дата истечения в формате YYYY-MM-DD (оставьте пустым для бессрочного):');
+    
+    const promoData = {
+        code: code.toUpperCase(),
+        discount,
+        maxUses: maxUses ? parseInt(maxUses) : null,
+        expiryDate: expiryDate || null
+    };
+    
+    fetchWithAuth(`${API_URL}/api/promocodes`, {
+        method: 'POST',
+        body: JSON.stringify(promoData)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            loadPromocodes();
+            showSuccess('Промокод создан');
+        } else {
+            showError(data.error || 'Ошибка создания промокода');
+        }
+    })
+    .catch(() => showError('Ошибка подключения'));
+}
+
+// Toggle promo status
+async function togglePromoStatus(code, active) {
+    try {
+        const response = await fetchWithAuth(`${API_URL}/api/promocodes/${code}`, {
+            method: 'PUT',
+            body: JSON.stringify({ active })
+        });
+        
+        if (response.ok) {
+            loadPromocodes();
+        } else {
+            if (response.status === 401 || response.status === 403) {
+                showError('Требуется авторизация');
+                adminLogout();
+            } else {
+                showError('Ошибка обновления статуса');
+            }
+        }
+    } catch (error) {
+        alert('Ошибка подключения');
+    }
+}
+
+// Delete promo
+function deletePromo(code) {
+    deleteCallback = async () => {
+        try {
+            showLoading('Удаление промокода...');
+            const response = await fetchWithAuth(`${API_URL}/api/promocodes/${code}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                hideLoading();
+                loadPromocodes();
+                showSuccess('Промокод удален');
+            } else {
+                hideLoading();
+                showError('Ошибка удаления');
+            }
+        } catch (error) {
+            hideLoading();
+            showError('Ошибка подключения');
+        }
+    };
+    deleteParams = { type: 'promo', code };
+    document.getElementById('confirmDeleteText').textContent = 'Вы уверены, что хотите удалить этот промокод?';
+    document.getElementById('confirmDeleteModal').classList.remove('hidden');
+    document.getElementById('confirmDeleteModal').classList.add('flex');
+}
+
+// Load settings admin
+async function loadSettingsAdmin() {
+    try {
+        const response = await fetch(`${API_URL}/api/customization`);
+        const data = await response.json();
+        
+        if (data) {
+            document.getElementById('settingSiteName').value = data.site_name || '';
+            document.getElementById('settingHeroTitle').value = data.hero_title || '';
+            document.getElementById('settingHeroSubtitle').value = data.hero_subtitle || '';
+        }
+    } catch (error) {
+        console.error('Error loading settings:', error);
+    }
+}
+
+// Save settings
+async function saveSettings() {
+    const settings = {
+        siteName: document.getElementById('settingSiteName').value,
+        heroTitle: document.getElementById('settingHeroTitle').value,
+        heroSubtitle: document.getElementById('settingHeroSubtitle').value,
+        primaryColor: '#1e3a8a',
+        accentColor: '#3b82f6'
+    };
+    
+    try {
+        const response = await fetchWithAuth(`${API_URL}/api/customization`, {
+            method: 'PUT',
+            body: JSON.stringify(settings)
+        });
+        
+        if (response.ok) {
+            loadCustomization();
+            showSuccess('Настройки сохранены');
+        } else {
+            if (response.status === 401 || response.status === 403) {
+                showError('Требуется авторизация');
+                adminLogout();
+            } else {
+                showError('Ошибка сохранения');
+            }
+        }
+    } catch (error) {
+        alert('Ошибка подключения');
+    }
+}
+
+// Admin logout
+function adminLogout() {
+    currentAdmin = false;
+    clearTokens();
+    window.location.hash = '';
+    backToMain();
+}
+</script>
+
+</body>
+</html>
