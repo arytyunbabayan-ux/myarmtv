@@ -1225,16 +1225,29 @@ function initLanguageToggle() {
 // Load countries from API
 async function loadCountries() {
     try {
+        console.log('Loading countries from:', `${API_URL}/api/countries`);
         showLoading('Загрузка стран...');
         const response = await fetch(`${API_URL}/api/countries`);
-        if (!response.ok) throw new Error('Ошибка загрузки стран');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         countries = await response.json();
-        renderCountries();
+        console.log('Countries loaded:', countries);
+        
+        if (!countries || countries.length === 0) {
+            console.warn('No countries returned from API');
+            showError('Страны не найдены. Пожалуйста, добавьте страны через админ-панель.');
+        } else {
+            renderCountries();
+        }
+        
         hideLoading();
     } catch (error) {
         hideLoading();
-        showError('Не удалось загрузить страны');
         console.error('Error loading countries:', error);
+        showError(`Не удалось загрузить страны: ${error.message}`);
     }
 }
 
@@ -1257,27 +1270,77 @@ async function loadCustomization() {
 // Render countries
 function renderCountries() {
     const grid = document.getElementById('countriesGrid');
+    
+    if (!grid) {
+        console.error('countriesGrid element not found');
+        return;
+    }
+    
+    if (!countries || countries.length === 0) {
+        console.warn('No countries to render');
+        grid.innerHTML = '<p class="text-center text-gray-400 col-span-full">Страны не найдены</p>';
+        return;
+    }
+    
     const t = translations[currentLang] || translations.ru;
+    
+    console.log('Rendering', countries.length, 'countries');
+    
     grid.innerHTML = countries.map(country => `
         <button onclick="selectCountry(${country.id})" class="country-card p-6 rounded-2xl border-2 border-gray-700 hover:border-gray-600 bg-gray-800 transition-all">
-            <div class="text-5xl mb-3">${country.flag}</div>
-            <div class="font-bold text-lg mb-1">${country.name}</div>
-            <div class="text-sm text-gray-400 mb-3">${country.channels} ${t.channels}</div>
-            <div class="text-xl font-bold text-blue-500">${country.price} ₽${t.perMonth}</div>
+            <div class="text-5xl mb-3">${country.flag || '🌍'}</div>
+            <div class="font-bold text-lg mb-1">${country.name || 'Неизвестная страна'}</div>
+            <div class="text-sm text-gray-400 mb-3">${country.channels || 0} ${t.channels}</div>
+            <div class="text-xl font-bold text-blue-500">${country.price || 0} ₽${t.perMonth}</div>
         </button>
     `).join('');
+    
+    console.log('Countries rendered successfully');
 }
 
-// Select country
-function selectCountry(id) {
+// Select country - make it globally available
+window.selectCountry = function(id) {
+    console.log('selectCountry called with id:', id);
+    console.log('Available countries:', countries);
+    
+    if (!countries || countries.length === 0) {
+        console.error('Countries not loaded yet');
+        showError('Страны еще не загружены. Пожалуйста, подождите...');
+        return;
+    }
+    
     selectedCountry = countries.find(c => c.id === id);
+    
+    if (!selectedCountry) {
+        console.error('Country not found with id:', id);
+        showError('Страна не найдена');
+        return;
+    }
+    
+    console.log('Selected country:', selectedCountry);
+    
     selectedAddons = [];
     selectedPeriod = 1;
-    document.getElementById('baseChannels').textContent = selectedCountry.channels;
+    
+    const baseChannelsEl = document.getElementById('baseChannels');
+    if (baseChannelsEl) {
+        baseChannelsEl.textContent = selectedCountry.channels;
+    } else {
+        console.error('baseChannels element not found');
+    }
+    
     updatePrices();
-    document.getElementById('modal').classList.remove('hidden');
-    document.getElementById('modal').classList.add('flex');
-}
+    
+    const modal = document.getElementById('modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        console.log('Modal opened');
+    } else {
+        console.error('Modal element not found');
+        showError('Модальное окно не найдено');
+    }
+};
 
 // Close modal
 function closeModal() {
