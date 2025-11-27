@@ -10,6 +10,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const sanitizeHtml = require('sanitize-html');
+const path = require('path');
 const db = require('./database');
 
 const app = express();
@@ -809,12 +810,26 @@ app.get('/health', (req, res) => {
 });
 
 // ============================================
+// ROOT ROUTE - Serve index.html
+// ============================================
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// ============================================
 // ERROR HANDLING MIDDLEWARE
 // ============================================
 
-// 404 handler
+// 404 handler - для API возвращает JSON, для остальных - index.html (SPA routing)
 app.use((req, res) => {
-  res.status(404).json({ error: 'Маршрут не найден' });
+  // Если это API запрос, возвращаем JSON ошибку
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Маршрут не найден' });
+  }
+  
+  // Для всех остальных запросов отдаем index.html (поддержка SPA роутинга)
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Centralized error handler
