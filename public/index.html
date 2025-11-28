@@ -610,61 +610,61 @@
 
                     <!-- Step 3: Personal Data -->
                     <div id="step3" class="step hidden">
-                        <h3 class="text-xl font-bold mb-6">Шаг 3: Ваши данные</h3>
+                        <h3 class="text-xl font-bold mb-4">Шаг 3: Ваши данные</h3>
 
-                        <form id="orderForm" class="space-y-3 mb-4">
+                        <form id="orderForm" class="space-y-2 mb-4">
                             <div>
-                                <label class="block text-sm font-bold mb-1" data-i18n="name">Ваше имя</label>
+                                <label class="block text-xs font-bold mb-1" data-i18n="name">Ваше имя</label>
                                 <input type="text" id="nameInput"
-                                    class="w-full px-4 py-2 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    class="w-full px-3 py-2 rounded-lg border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     placeholder="Иван Иванов" required>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-bold mb-1" data-i18n="email">Email адрес</label>
+                                <label class="block text-xs font-bold mb-1" data-i18n="email">Email адрес</label>
                                 <input type="email" id="emailInput"
-                                    class="w-full px-4 py-2 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    class="w-full px-3 py-2 rounded-lg border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     placeholder="email@example.com" required>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-bold mb-1" data-i18n="password">Придумайте
+                                <label class="block text-xs font-bold mb-1" data-i18n="password">Придумайте
                                     пароль</label>
                                 <input type="password" id="passwordInput"
-                                    class="w-full px-4 py-2 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    class="w-full px-3 py-2 rounded-lg border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     placeholder="••••••••" required>
-                                <p class="text-xs text-gray-400 mt-1" data-i18n="passwordMin">Минимум 6 символов</p>
+                                <p class="text-xs text-gray-400 mt-0.5" data-i18n="passwordMin">Минимум 6 символов</p>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-bold mb-1" data-i18n="phone">Телефон</label>
-                                <input type="tel" id="phoneInput"
-                                    class="w-full px-4 py-2 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="+7 (999) 123-45-67" required>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-bold mb-1" data-i18n="promoCode">Промокод
-                                    (необязательно)</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="promoInput"
-                                        class="flex-1 px-4 py-2 rounded-xl border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="PROMO123">
-                                    <button type="button" onclick="applyPromo()"
-                                        class="px-4 py-2 rounded-xl font-bold bg-green-600 hover:bg-green-700">Применить</button>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold mb-1" data-i18n="phone">Телефон</label>
+                                    <input type="tel" id="phoneInput"
+                                        class="w-full px-3 py-2 rounded-lg border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        placeholder="+7 (999)..." required>
                                 </div>
-                                <p id="promoMessage" class="text-sm mt-2 hidden"></p>
+
+                                <div>
+                                    <label class="block text-xs font-bold mb-1" data-i18n="promoCode">Промокод</label>
+                                    <div class="flex gap-1">
+                                        <input type="text" id="promoInput"
+                                            class="flex-1 px-3 py-2 rounded-lg border-2 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                            placeholder="PROMO">
+                                        <button type="button" onclick="applyPromo()"
+                                            class="px-2 py-2 rounded-lg font-bold bg-green-600 hover:bg-green-700 text-sm">OK</button>
+                                    </div>
+                                </div>
                             </div>
-                            <p id="emailError" class="text-red-500 text-sm hidden"></p>
+                            <p id="promoMessage" class="text-xs mt-1 hidden"></p>
+                            <p id="emailError" class="text-red-500 text-xs hidden"></p>
                         </form>
 
-                        <div class="p-4 rounded-xl mb-6 bg-gray-700 flex justify-between items-center">
+                        <div class="p-3 rounded-xl mb-4 bg-gray-700 flex justify-between items-center">
                             <div>
-                                <div class="text-sm opacity-75" data-i18n="toPay">К оплате:</div>
-                                <div class="text-sm opacity-75" id="finalPeriodInfo">За 1 месяц</div>
+                                <div class="text-xs opacity-75" data-i18n="toPay">К оплате:</div>
+                                <div class="text-xs opacity-75" id="finalPeriodInfo">За 1 месяц</div>
                             </div>
-                            <div class="text-3xl font-extrabold text-blue-500"><span id="finalPrice">250</span> ₽
-                            </div>
+                            <div class="text-2xl font-extrabold text-blue-500"><span id="finalPrice">250</span> ₽</div>
                         </div>
 
                         <div class="flex gap-4">
@@ -720,6 +720,18 @@
             </div>
         </div>
     </div>
+
+    <!-- WhatsApp Widget -->
+    <a href="https://wa.me/79398652726" target="_blank"
+        class="fixed bottom-6 right-6 z-40 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 flex items-center justify-center group">
+        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+            <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+        </svg>
+        <span
+            class="absolute right-full mr-3 bg-gray-800 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">Написать
+            в WhatsApp</span>
+    </a>
 
     <!-- User Cabinet Login -->
     <div id="userLoginPanel" class="hidden min-h-screen flex items-center justify-center bg-gray-900 p-4">
@@ -2024,17 +2036,22 @@
                 return;
             }
 
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            // Email validation
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             if (!emailRegex.test(email)) {
-                document.getElementById('emailError').textContent = currentLang === 'ru' ? 'Введите корректный email' : 'Enter a valid email';
+                document.getElementById('emailError').textContent = currentLang === 'ru' ? 'Введите корректный email (например, user@example.com)' : 'Enter a valid email (e.g. user@example.com)';
                 document.getElementById('emailError').classList.remove('hidden');
                 return;
             }
 
-            // Phone validation (basic)
-            const phoneRegex = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/;
-            if (!phoneRegex.test(phone)) {
-                document.getElementById('emailError').textContent = currentLang === 'ru' ? 'Введите корректный номер телефона' : 'Enter a valid phone number';
+            // Phone validation
+            // Allows: +7 (999) 123-45-67, 89991234567, +79991234567, etc.
+            // Must have at least 10 digits
+            const phoneDigits = phone.replace(/\D/g, '');
+            const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+
+            if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+                document.getElementById('emailError').textContent = currentLang === 'ru' ? 'Введите корректный номер телефона (минимум 10 цифр)' : 'Enter a valid phone number (min 10 digits)';
                 document.getElementById('emailError').classList.remove('hidden');
                 return;
             }
