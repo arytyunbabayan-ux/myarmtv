@@ -29,7 +29,9 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://cdn.jsdelivr.net"],
+      scriptSrcAttr: ["'unsafe-inline'", "'unsafe-hashes'"], // Allow onclick handlers
       imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://cdn.jsdelivr.net"], // Allow Chart.js source maps
     },
   },
 }));
