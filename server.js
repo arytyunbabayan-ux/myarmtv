@@ -13,10 +13,11 @@ const sanitizeHtml = require('sanitize-html');
 const path = require('path');
 const fs = require('fs');
 const db = require('./database');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy - required for Render and other reverse proxies
+app.set('trust proxy', 1);
 // ============================================
 // SECURITY MIDDLEWARE
 // ============================================
