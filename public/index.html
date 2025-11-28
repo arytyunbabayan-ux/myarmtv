@@ -657,6 +657,15 @@
                             </div>
                             <p id="promoMessage" class="text-xs mt-1 hidden"></p>
                             <p id="emailError" class="text-red-500 text-xs hidden"></p>
+
+                            <div class="flex items-start gap-2 mt-4">
+                                <input type="checkbox" id="termsCheck"
+                                    class="mt-1 w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500">
+                                <label for="termsCheck" class="text-xs text-gray-400">
+                                    Я принимаю условия <a href="/terms.html" target="_blank"
+                                        class="text-blue-500 hover:underline">Пользовательского соглашения</a>
+                                </label>
+                            </div>
                         </form>
 
                         <div class="p-3 rounded-xl mb-4 bg-gray-700 flex justify-between items-center">
@@ -720,6 +729,15 @@
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-8 mt-12 border-t border-gray-800">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-500 text-sm mb-2">© 2025 mytvs.ru - Все права защищены</p>
+            <a href="/terms.html" class="text-gray-600 hover:text-gray-400 text-sm transition-colors">Пользовательское
+                соглашение</a>
+        </div>
+    </footer>
 
     <!-- WhatsApp Widget -->
     <a href="https://wa.me/79398652726" target="_blank"
@@ -2056,6 +2074,14 @@
                 return;
             }
 
+            // Terms validation
+            const termsCheck = document.getElementById('termsCheck');
+            if (!termsCheck.checked) {
+                document.getElementById('emailError').textContent = currentLang === 'ru' ? 'Необходимо принять условия соглашения' : 'You must accept the terms';
+                document.getElementById('emailError').classList.remove('hidden');
+                return;
+            }
+
             // Calculate dates
             const startDate = new Date().toISOString();
             const endDate = new Date();
@@ -2628,7 +2654,8 @@
                             showError('Требуется авторизация');
                             adminLogout();
                         } else {
-                            showError('Ошибка обновления');
+                            const data = await response.json();
+                            showError(data.error || 'Ошибка обновления');
                         }
                     }
                 } else {
@@ -2649,7 +2676,8 @@
                             showError('Требуется авторизация');
                             adminLogout();
                         } else {
-                            showError('Ошибка добавления');
+                            const data = await response.json();
+                            showError(data.error || 'Ошибка добавления');
                         }
                     }
                 }
@@ -2733,7 +2761,8 @@
                         showError('Требуется авторизация');
                         adminLogout();
                     } else {
-                        showError('Ошибка обновления');
+                        const data = await response.json();
+                        showError(data.error || 'Ошибка обновления');
                     }
                 }
             } catch (error) {
