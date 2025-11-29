@@ -750,6 +750,21 @@
                                 <p class="text-xs text-gray-400 mt-0.5" data-i18n="passwordMin">Минимум 6 символов</p>
                             </div>
 
+                            <div>
+                                <label class="block text-xs font-bold mb-1">Ваше устройство</label>
+                                <select id="deviceInput"
+                                    class="w-full px-3 py-2 rounded-lg border-2 bg-gray-700 border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    required>
+                                    <option value="">Выберите устройство</option>
+                                    <option value="android-tv">📺 Телевизор на Android</option>
+                                    <option value="samsung">📺 Samsung Smart TV</option>
+                                    <option value="lg">📺 LG Smart TV</option>
+                                    <option value="ios">📱 iOS (iPhone/iPad)</option>
+                                    <option value="android">📱 Android (телефон/планшет)</option>
+                                    <option value="tv-box">📦 ТВ приставка</option>
+                                </select>
+                            </div>
+
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-xs font-bold mb-1" data-i18n="phone">Телефон</label>
@@ -2148,12 +2163,12 @@
             msg.classList.remove('hidden');
         }
 
-        // Submit form
         async function submitForm() {
             const name = document.getElementById('nameInput').value.trim();
             const email = document.getElementById('emailInput').value.trim();
             const password = document.getElementById('passwordInput').value;
             const phone = document.getElementById('phoneInput')?.value.trim() || '';
+            const device = document.getElementById('deviceInput')?.value || '';
 
             // Validation
             if (!name || !email || !password || !phone) {
@@ -2215,6 +2230,7 @@
                 email,
                 password,
                 phone,
+                device,
                 country: selectedCountry.name,
                 countryId: selectedCountry.id,
                 addons: selectedAddons,
@@ -2416,10 +2432,38 @@
 
         // Show admin panel
         function showAdminPanel() {
-            document.getElementById('mainSite').classList.add('hidden');
-            document.getElementById('adminPanel').classList.remove('hidden');
-            showAdminSection('dashboard');
-            loadAdminData();
+            // CRITICAL: Verify admin token before showing UI
+            const token = getAdminToken();
+            if (!token) {
+                showError('Требуется авторизация администратора');
+                currentAdmin = false;
+                return;
+            }
+
+            // Verify token is valid by making a test API call
+            fetch(`${API_URL}/api/users`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Invalid token');
+                    }
+                    // Token is valid, show admin panel
+                    document.getElementById('mainSite').classList.add('hidden');
+                    document.getElementById('adminPanel').classList.remove('hidden');
+                    showAdminSection('dashboard');
+                    loadAdminData();
+                })
+                .catch(err => {
+                    showError('Недействительный токен администратора');
+                    currentAdmin = false;
+                    removeAdminToken();
+                    // Redirect to main site
+                    document.getElementById('mainSite').classList.remove('hidden');
+                    document.getElementById('adminPanel').classList.add('hidden');
+                });
         }
 
         // Show admin section
@@ -2443,6 +2487,37 @@
         // Load admin data
         function loadAdminData() {
             loadStatistics();
+            loadUsers();
+            loadAdminCountries();
+            loadPackagesAdmin();
+            loadPromocodes();
+            loadSettingsAdmin();
+
+            // SECURITY: Periodic token validation (every 5 minutes)
+            setInterval(() => {
+                const token = getAdminToken();
+                if (!token || !currentAdmin) {
+                    return;
+                }
+
+                // Verify token is still valid
+                fetch(`${API_URL}/api/users`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error('Token expired');
+                        }
+                    })
+                    .catch(() => {
+                        // Token expired or invalid - logout
+                        showError('Сессия истекла. Требуется повторный вход.');
+                        currentAdmin = false;
+                        removeAdminToken();
+                        document.getElementById('mainSite').classList.remove('hidden');
+                        document.getElementById('adminPanel').classList.add('hidden');
+                    });
+            }, 5 * 60 * 1000); // Check every 5 minutes
         }
 
         // Load statistics
